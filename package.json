@@ -1,6 +1,6 @@
 {
   "name": "portakal",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Universal printer language SDK — 9 languages, 9 parsers, 63 cross-compilers, validation. TSC, ZPL, EPL, ESC/POS, CPCL, DPL, SBPL, Star PRNT, IPL. Zero dependencies.",
   "keywords": [
     "cpcl",
