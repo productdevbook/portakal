@@ -265,6 +265,7 @@ builder.raw(new Uint8Array([0x1b, 0x70, 0x00, 0x32, 0x32])); // ESC/POS cash dra
 | `.toSBPL()`     | `string`     | SATO printers                   |
 | `.toESCPOS()`   | `Uint8Array` | ESC/POS receipt printers        |
 | `.toStarPRNT()` | `Uint8Array` | Star Micronics printers         |
+| `.toIPL()`      | `string`     | Intermec/Honeywell printers     |
 | `.toPreview()`  | `string`     | SVG preview (no printer needed) |
 
 ### Image Processing
@@ -321,9 +322,9 @@ formatTable(
 | **SBPL**        | SATO label printers                            | :white_check_mark: |
 | **ESC/POS**     | Epson, Bixolon, Citizen, Star (compat mode)    | :white_check_mark: |
 | **Star PRNT**   | Star TSP100/143/600/700 (native mode)          | :white_check_mark: |
-| **IPL**         | Intermec/Honeywell printers                    | Planned            |
+| **IPL**         | Intermec/Honeywell printers                    | :white_check_mark: |
+| **PPLA/PPLB**   | Argox (use DPL/EPL/ZPL)                        | :white_check_mark: |
 | **Fingerprint** | Honeywell Smart Printers                       | Planned            |
-| **PPLA/PPLB**   | Argox label printers                           | Planned            |
 
 ## Transport
 
@@ -356,7 +357,7 @@ await usbDevice.transferOut(endpointNumber, escpos);
 | :--------------------------- | :----------------------------: | :------------------------------------------------------------------------: | :---------------------------------------------: | :---------------------------------------------: |
 | Zero dependencies            |       :white_check_mark:       |                          :x: (pngjs, iconv-lite)                           |             :x: (get-pixels, jimp)              |               :white_check_mark:                |
 | TypeScript-first             |       :white_check_mark:       |                                  Partial                                   |                     Partial                     |               :white_check_mark:                |
-| Multi-language output        | :white_check_mark: 8 languages |                              :x: ESC/POS only                              |                :x: ESC/POS only                 |                  :x: ZPL only                   |
+| Multi-language output        | :white_check_mark: 9 languages |                              :x: ESC/POS only                              |                :x: ESC/POS only                 |                  :x: ZPL only                   |
 | Transport-agnostic           |       :white_check_mark:       |                               :x: (coupled)                                |                  :x: (coupled)                  |               :white_check_mark:                |
 | Label printers (TSC/ZPL/EPL) |       :white_check_mark:       |                                    :x:                                     |                       :x:                       |                    ZPL only                     |
 | Receipt printers (ESC/POS)   |       :white_check_mark:       |                             :white_check_mark:                             |               :white_check_mark:                |                       :x:                       |
@@ -369,12 +370,12 @@ await usbDevice.transferOut(endpointNumber, escpos);
 | No native modules (no gyp)   |       :white_check_mark:       |                                    :x:                                     |                       :x:                       |               :white_check_mark:                |
 | Pure ESM                     |       :white_check_mark:       |                                 :x: (CJS)                                  |                    :x: (CJS)                    |                    :x: (CJS)                    |
 
-**portakal is the only library that generates** 8 printer languages from a single API with zero dependencies.
+**portakal is the only library that generates** 9 printer languages from a single API with zero dependencies.
 
 ## Features
 
 - Zero dependencies — pure computation, no native modules, no node-gyp
-- **8 printer languages** — TSC, ZPL, EPL, CPCL, DPL, SBPL, ESC/POS, Star PRNT
+- **9 printer languages** — TSC, ZPL, EPL, CPCL, DPL, SBPL, ESC/POS, Star PRNT, IPL
 - Pure ESM, edge-runtime compatible (Cloudflare Workers, Deno, Bun)
 - TypeScript-first with strict types (tsgo)
 - Transport-agnostic — generates commands, you handle the connection
@@ -386,7 +387,8 @@ await usbDevice.transferOut(endpointNumber, escpos);
 - Raw command passthrough for advanced/unsupported features
 - Optional [`etiket`](https://github.com/productdevbook/etiket) integration for barcode/QR images (40+ formats)
 - Works in browser, Node.js, Deno, Bun, Electron
-- 153 tests across 13 test files
+- **UTF-8 encoding engine** — auto code page selection (CP437, CP858, CP1252, CP866, CP857)
+- 184 tests across 15 test files
 
 ## Contributing
 
