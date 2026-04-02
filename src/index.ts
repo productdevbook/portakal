@@ -9,6 +9,7 @@ export { compileToCPCL } from "./languages/cpcl";
 export { compileToDPL } from "./languages/dpl";
 export { compileToSBPL } from "./languages/sbpl";
 export { compileToStarPRNT } from "./languages/starprnt";
+export { compileToIPL } from "./languages/ipl";
 export { renderPreview } from "./preview";
 export {
   imageToMonochrome,

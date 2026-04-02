@@ -19,6 +19,7 @@ import { compileToCPCL } from "./languages/cpcl";
 import { compileToDPL } from "./languages/dpl";
 import { compileToSBPL } from "./languages/sbpl";
 import { compileToStarPRNT } from "./languages/starprnt";
+import { compileToIPL } from "./languages/ipl";
 import { renderPreview } from "./preview";
 
 export class LabelBuilder {
@@ -124,6 +125,11 @@ export class LabelBuilder {
   /** Compile to Star PRNT byte sequence (Star Micronics printers) */
   toStarPRNT(): Uint8Array {
     return compileToStarPRNT(this.resolve());
+  }
+
+  /** Compile to IPL command string (Intermec/Honeywell printers) */
+  toIPL(): string {
+    return compileToIPL(this.resolve());
   }
 
   /** Render as SVG preview (for development/testing without a physical printer) */
