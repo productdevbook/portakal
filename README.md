@@ -400,6 +400,70 @@ await usbDevice.transferOut(endpointNumber, bytes);
 - **Per-language SVG preview** — TSC fonts differ from ZPL fonts, ESC/POS renders receipt-style
 - 447 tests across 28 test files
 
+## Help Us Test — Real Printer Output Needed
+
+We're building the most accurate open-source printer language SDK, but we need **real-world validation**. If you have access to a thermal printer, we'd love your help comparing portakal's output against actual printed labels.
+
+### How to help
+
+1. **Pick a language** — ZPL, TSC, EPL, CPCL, or any supported language
+2. **Write a test label** — use portakal to generate commands, or paste raw printer code into the [Playground](https://portakal.productdevbook.com)
+3. **Print it** — send the commands to a real printer
+4. **Compare** — take a photo of the printed label and a screenshot of portakal's SVG preview
+5. **Report** — open an [issue](https://github.com/productdevbook/portakal/issues/new) with:
+   - The printer code (ZPL, TSC, etc.)
+   - Screenshot of portakal's preview
+   - Photo of the actual printed label
+   - What's different (position, font size, spacing, barcode, etc.)
+
+### Example: ZPL test label
+
+```zpl
+^XA
+^CF0,60
+^FO50,50^GB100,100,100^FS
+^FO75,75^FR^GB100,100,100^FS
+^FO93,93^GB40,40,40^FS
+^FO220,50^FDIntershipping, Inc.^FS
+^CF0,30
+^FO220,115^FD1000 Shipping Lane^FS
+^FO220,155^FDShelbyville TN 38102^FS
+^FO50,250^GB700,3,3^FS
+^CFA,30
+^FO50,300^FDJohn Doe^FS
+^FO50,340^FD100 Main Street^FS
+^FO50,380^FDSpringfield TN 39021^FS
+^BY5,2,270
+^FO100,550^BC^FD12345678^FS
+^FO50,900^GB700,250,3^FS
+^FO400,900^GB3,250,3^FS
+^CF0,40
+^FO100,960^FDCtr. X34B-1^FS
+^CF0,190
+^FO470,955^FDCA^FS
+^XZ
+```
+
+Paste this into the [Playground](https://portakal.productdevbook.com) (Validate tab, select ZPL) and compare with [Labelary](http://labelary.com/viewer.html) or your real printer.
+
+### What we're looking for
+
+| Area | What to check |
+|:-----|:-------------|
+| **Text positioning** | Are texts at the correct x,y? Do they overflow? |
+| **Font sizes** | Does `^CF0,60` look the same size as the real printer? |
+| **Font rendering** | Font 0 should be proportional (Helvetica-like), Font A should be monospace |
+| **^FR reverse (XOR)** | The Intershipping logo (3 overlapping boxes) should show black L-shape + white area + small black square |
+| **Barcodes** | Correct height from `^BY`? Correct width? Readable interpretation line? |
+| **Box/line thickness** | Does `^GB` draw borders inward? Correct corner radius? |
+| **^LH, ^LS, ^LT offsets** | Do label home / shift / top offsets apply correctly? |
+| **ESC/POS receipts** | Alignment, bold, text sizing on Epson/Star/Bixolon |
+
+Even a "looks correct" confirmation is helpful. Every report makes the SDK more reliable for everyone.
+
+> [!TIP]
+> No printer? You can still help by comparing our preview against [Labelary](http://labelary.com/viewer.html) (ZPL) or other online viewers and reporting any visual differences.
+
 ## Contributing
 
 Contributions are welcome! Here are areas where help is especially appreciated:
