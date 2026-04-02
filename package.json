@@ -1,6 +1,6 @@
 {
   "name": "portakal",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Universal printer language SDK — TSC, ZPL, EPL, ESC/POS, CPCL, DPL, SBPL, Star PRNT, IPL. 9 languages, one API. Pure TypeScript, zero dependencies.",
   "keywords": [
     "cpcl",
