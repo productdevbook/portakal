@@ -7,6 +7,9 @@ import {
   parseZPL,
   parseEPL,
   parseCPCL,
+  parseDPL,
+  parseSBPL,
+  parseIPL,
   type LabelBuilder,
   type MonochromeBitmap,
   type ResolvedLabel,
@@ -429,6 +432,15 @@ export function setupApp(): void {
         parsed = { widthDots: r.widthDots, heightDots: r.heightDots || 240, elements: r.elements };
       } else if (currentLang === "cpcl") {
         const r = parseCPCL(code);
+        parsed = { widthDots: r.widthDots, heightDots: r.heightDots, elements: r.elements };
+      } else if (currentLang === "dpl") {
+        const r = parseDPL(code);
+        parsed = { widthDots: r.widthDots, heightDots: 240, elements: r.elements };
+      } else if (currentLang === "sbpl") {
+        const r = parseSBPL(code);
+        parsed = { widthDots: 320, heightDots: 240, elements: r.elements };
+      } else if (currentLang === "ipl") {
+        const r = parseIPL(code);
         parsed = { widthDots: r.widthDots, heightDots: r.heightDots, elements: r.elements };
       } else {
         parsed = parseTSC(code);

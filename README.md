@@ -390,6 +390,7 @@ await usbDevice.transferOut(endpointNumber, escpos);
 | Image dithering              |       :white_check_mark:       |                                    :x:                                     |                       :x:                       |                       :x:                       |
 | Receipt layout engine        |       :white_check_mark:       |                                  Partial                                   |                       :x:                       |                       :x:                       |
 | SVG preview                  |       :white_check_mark:       |                                    :x:                                     |                       :x:                       |                       :x:                       |
+| Command parser (reverse)     |  :white_check_mark: 9 parsers  |                                    :x:                                     |                       :x:                       |                       :x:                       |
 | Works in browser             |       :white_check_mark:       |                                    :x:                                     |                       :x:                       |               :white_check_mark:                |
 | No native modules (no gyp)   |       :white_check_mark:       |                                    :x:                                     |                       :x:                       |               :white_check_mark:                |
 | Pure ESM                     |       :white_check_mark:       |                                 :x: (CJS)                                  |                    :x: (CJS)                    |                    :x: (CJS)                    |
@@ -408,12 +409,13 @@ await usbDevice.transferOut(endpointNumber, escpos);
 - **Image processing** — RGBA → monochrome with 4 dithering algorithms (Floyd-Steinberg, Atkinson, ordered, threshold)
 - **Receipt layout engine** — same-line left+right alignment, tables, word-wrap, separators
 - **SVG preview** — `.toPreview()` renders labels without a physical printer
+- **9 parsers** — reverse-parse printer commands back to structured data (TSC, ZPL, EPL, CPCL, ESC/POS, DPL, SBPL, Star PRNT, IPL)
 - Drawing primitives — box, line, circle, diagonal
 - Raw command passthrough for advanced/unsupported features
 - Optional [`etiket`](https://github.com/productdevbook/etiket) integration for barcode/QR images (40+ formats)
 - Works in browser, Node.js, Deno, Bun, Electron
 - **UTF-8 encoding engine** — auto code page selection (CP437, CP858, CP1252, CP866, CP857)
-- 184 tests across 15 test files
+- 389 tests across 23 test files
 
 ## Contributing
 
