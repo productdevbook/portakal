@@ -31,11 +31,17 @@ function calcFontSize(size: number, yScale?: number): number {
 }
 
 /**
- * Estimate text width in dots based on font size and content length.
- * Uses average character width ratio of 0.6 for monospace fonts.
+ * Baseline offset ratio from top of character cell.
+ * Proportional fonts (font 0): ~0.78, bitmap/monospace: ~0.82
  */
-function estimateTextWidth(content: string, fontSize: number): number {
-  return content.length * fontSize * 0.6;
+function baselineRatio(font?: string): number {
+  return font === "0" ? 0.78 : 0.82;
+}
+
+/** CSS font-family based on font identifier. Uses single quotes for SVG attribute compatibility. */
+function fontFamily(font?: string): string {
+  if (font === "0") return "'Helvetica Neue', Helvetica, Arial, sans-serif";
+  return "monospace";
 }
 
 function renderElement(el: LabelElement): string {
@@ -45,20 +51,26 @@ function renderElement(el: LabelElement): string {
       const x = o.x ?? 0;
       const y = o.y ?? 0;
       const fs = calcFontSize(o.size ?? 1, o.yScale);
+      const bl = baselineRatio(o.font);
+      const ff = fontFamily(o.font);
       const weight = o.bold ? "bold" : "normal";
       const decoration = o.underline ? ' text-decoration="underline"' : "";
       const transform = o.rotation ? ` transform="rotate(${o.rotation} ${x} ${y})"` : "";
 
-      if (o.reverse) {
-        const textW = estimateTextWidth(el.content, fs);
-        const textH = fs * 1.2;
-        return (
-          `<rect x="${x - 2}" y="${y - 2}" width="${textW + 4}" height="${textH + 4}" fill="#000"/>` +
-          `<text x="${x}" y="${y + fs}" fill="#fff" font-size="${fs}" font-weight="${weight}" font-family="monospace"${decoration}${transform}>${escapeXml(el.content)}</text>`
-        );
+      // Text anchor for alignment (^FB justify)
+      let anchor = "";
+      let textX = x;
+      if (o.maxWidth && o.align === "center") {
+        anchor = ' text-anchor="middle"';
+        textX = x + o.maxWidth / 2;
+      } else if (o.maxWidth && o.align === "right") {
+        anchor = ' text-anchor="end"';
+        textX = x + o.maxWidth;
       }
 
-      return `<text x="${x}" y="${y + fs}" fill="#000" font-size="${fs}" font-weight="${weight}" font-family="monospace"${decoration}${transform}>${escapeXml(el.content)}</text>`;
+      const fill = o.reverse ? "#fff" : "#000";
+      const svgY = Math.round((y + fs * bl) * 100) / 100;
+      return `<text x="${textX}" y="${svgY}" fill="${fill}" font-size="${fs}" font-weight="${weight}" font-family="${ff}"${anchor}${decoration}${transform}>${escapeXml(el.content)}</text>`;
     }
 
     case "image": {

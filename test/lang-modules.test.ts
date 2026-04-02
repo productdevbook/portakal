@@ -78,8 +78,8 @@ describe("zpl language module", () => {
       radius: 4,
     });
     const svg = zpl.preview(b2);
-    // radius = (4/8) * (100/2) = 25
-    expect(svg).toContain('rx="25"');
+    // radius is in dots, used directly in SVG
+    expect(svg).toContain('rx="4"');
   });
 
   it("parses ZPL code", () => {

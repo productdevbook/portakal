@@ -37,6 +37,11 @@ function escapeXml(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
+/** Is this a scalable/proportional font? Font 0 is CG Triumvirate (proportional). */
+function isProportionalFont(font: string | undefined): boolean {
+  return (font ?? "0") === "0";
+}
+
 function zplFontSize(font: string | undefined, size: number | undefined, yScale?: number): number {
   // yScale = raw dot height from ^A or ^CF command
   if (yScale && yScale > 10) return yScale;
@@ -47,11 +52,30 @@ function zplFontSize(font: string | undefined, size: number | undefined, yScale?
 }
 
 function zplCharWidth(font: string | undefined, size: number | undefined, xScale?: number): number {
-  if (xScale && xScale > 10) return xScale * 0.6; // scalable font approximate
+  if (xScale && xScale > 10) {
+    // Font 0 (proportional): avg glyph advance ≈ 0.52 × width param
+    // Bitmap fonts (A-H): monospace, char advance = width param directly
+    return isProportionalFont(font) ? xScale * 0.52 : xScale;
+  }
   const f = ZPL_FONTS[(font ?? "0").toUpperCase()];
   if (f && size) return f.w * size;
   if (f) return f.w;
   return size ? size * 7 : 10;
+}
+
+/** Baseline offset from top of character cell. */
+function zplBaselineRatio(font: string | undefined): number {
+  // Font 0 (CG Triumvirate / Helvetica-like): ascent ≈ 0.78
+  // Bitmap fonts A-H: ascent ≈ 0.82
+  return isProportionalFont(font) ? 0.78 : 0.82;
+}
+
+/** CSS font-family for ZPL font. Uses single quotes for SVG attribute compatibility. */
+function zplFontFamily(font: string | undefined): string {
+  if (isProportionalFont(font)) {
+    return "'Helvetica Neue', Helvetica, Arial, sans-serif";
+  }
+  return "monospace";
 }
 
 function renderElement(el: LabelElement): string {
@@ -61,20 +85,25 @@ function renderElement(el: LabelElement): string {
       const x = o.x ?? 0;
       const y = o.y ?? 0;
       const fs = zplFontSize(o.font, o.size, o.yScale);
-      const cw = zplCharWidth(o.font, o.size, o.xScale);
+      const baseline = zplBaselineRatio(o.font);
+      const fontFamily = zplFontFamily(o.font);
       const weight = o.bold ? "bold" : "normal";
       const transform = o.rotation ? ` transform="rotate(${o.rotation} ${x} ${y})"` : "";
 
-      // ^FR reverse: draw black background then white text
-      if (o.reverse) {
-        const tw = el.content.length * cw;
-        return (
-          `<rect x="${x - 1}" y="${y - 1}" width="${tw + 2}" height="${fs + 2}" fill="#000"/>` +
-          `<text x="${x}" y="${y + fs * 0.85}" fill="#fff" font-size="${fs}" font-weight="${weight}" font-family="monospace"${transform}>${escapeXml(el.content)}</text>`
-        );
+      // Text anchor for ^FB alignment
+      let anchor = "";
+      let textX = x;
+      if (o.maxWidth && o.align === "center") {
+        anchor = ' text-anchor="middle"';
+        textX = x + o.maxWidth / 2;
+      } else if (o.maxWidth && o.align === "right") {
+        anchor = ' text-anchor="end"';
+        textX = x + o.maxWidth;
       }
 
-      return `<text x="${x}" y="${y + fs * 0.85}" fill="#000" font-size="${fs}" font-weight="${weight}" font-family="monospace"${transform}>${escapeXml(el.content)}</text>`;
+      const fill = o.reverse ? "#fff" : "#000";
+      const svgY = Math.round((y + fs * baseline) * 100) / 100;
+      return `<text x="${textX}" y="${svgY}" fill="${fill}" font-size="${fs}" font-weight="${weight}" font-family="${fontFamily}"${anchor}${transform}>${escapeXml(el.content)}</text>`;
     }
 
     case "image": {
@@ -105,13 +134,11 @@ function renderElement(el: LabelElement): string {
       const t = o.thickness ?? 1;
       const rx = o.radius ?? 0;
       // ZPL ^GB: filled when thickness >= min(width, height)
-      // Corner radius formula: (r/8) * (shorter_side/2)
-      const cornerR = rx > 0 ? (rx / 8) * (Math.min(o.width, o.height) / 2) : 0;
       if (t >= Math.min(o.width, o.height)) {
-        return `<rect x="${o.x}" y="${o.y}" width="${o.width}" height="${o.height}" fill="#000" rx="${cornerR}"/>`;
+        return `<rect x="${o.x}" y="${o.y}" width="${o.width}" height="${o.height}" fill="#000" rx="${rx}"/>`;
       }
       // ZPL border draws inward
-      return `<rect x="${o.x + t / 2}" y="${o.y + t / 2}" width="${o.width - t}" height="${o.height - t}" fill="none" stroke="#000" stroke-width="${t}" rx="${cornerR}"/>`;
+      return `<rect x="${o.x + t / 2}" y="${o.y + t / 2}" width="${o.width - t}" height="${o.height - t}" fill="none" stroke="#000" stroke-width="${t}" rx="${rx}"/>`;
     }
 
     case "line": {
@@ -137,9 +164,43 @@ function renderElement(el: LabelElement): string {
 
     case "ellipse":
     case "reverse":
-    case "erase":
-    case "raw":
       return "";
+
+    case "erase": {
+      // White fill — used for ^FR XOR effect (e.g., Intershipping logo)
+      const o = el.options;
+      return `<rect x="${o.x}" y="${o.y}" width="${o.width}" height="${o.height}" fill="#fff"/>`;
+    }
+
+    case "raw": {
+      // Parse barcode raw ZPL for placeholder rendering
+      if (typeof el.content === "string" && el.content.includes("^B")) {
+        const byMatch = el.content.match(/\^BY(\d+)/);
+        const foMatch = el.content.match(/\^FO(\d+),(\d+)/);
+        const bcMatch = el.content.match(/\^B([A-Z0-9])N?,(\d+)/);
+        const fdMatch = el.content.match(/\^FD(.+?)\^FS/);
+        if (foMatch && fdMatch) {
+          const bx = Number(foMatch[1]);
+          const by = Number(foMatch[2]);
+          const bh = bcMatch ? Number(bcMatch[2]) : 80;
+          const data = fdMatch[1];
+          const mw = byMatch ? Number(byMatch[1]) : 2;
+          // Code 128 width: (dataChars + 2) * 11 + 13 modules × moduleWidth
+          const bw = ((data.length + 2) * 11 + 13) * mw;
+          // Barcode placeholder: striped pattern using SVG pattern
+          const pid = `bp${bx}${by}`;
+          const textY = by + bh + 15;
+          return [
+            `<defs><pattern id="${pid}" width="${mw * 2}" height="${bh}" patternUnits="userSpaceOnUse">`,
+            `<rect width="${mw}" height="${bh}" fill="#000"/>`,
+            `</pattern></defs>`,
+            `<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" fill="url(#${pid})"/>`,
+            `<text x="${bx + bw / 2}" y="${textY}" text-anchor="middle" fill="#000" font-size="14" font-family="monospace">${escapeXml(data)}</text>`,
+          ].join("");
+        }
+      }
+      return "";
+    }
   }
 }
 
@@ -182,4 +243,5 @@ export const zpl = {
   validate(code: string) {
     return validate(code, "zpl");
   },
+
 };

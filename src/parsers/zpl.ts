@@ -37,7 +37,7 @@ export interface ZPLParseResult {
  * ZPL commands start with ^ (caret) or ~ (tilde).
  * ^FD data runs until ^FS.
  */
-function tokenize(code: string): ZPLCommand[] {
+export function tokenize(code: string): ZPLCommand[] {
   const commands: ZPLCommand[] = [];
   let i = 0;
 
@@ -127,6 +127,10 @@ export function parseZPL(code: string): ZPLParseResult {
   // State tracking
   let fieldX = 0;
   let fieldY = 0;
+  let labelHomeX = 0;
+  let labelHomeY = 0;
+  let labelShift = 0;
+  let labelTop = 0;
   let currentFont = "0";
   let currentFontH = 30;
   let currentFontW = 30;
@@ -134,8 +138,13 @@ export function parseZPL(code: string): ZPLParseResult {
   let fieldReverse = false;
   let fieldData = "";
   let barcodeType = "";
-  let barcodeHeight = 80;
-  let barcodeReadable = true;
+  let barcodeHeight = 10; // ^BY default height
+  let barcodeModuleWidth = 2; // ^BY default module width
+  let fieldBaseline = false;
+  // ^FB state
+  let fieldBlockWidth = 0;
+  let fieldBlockMaxLines = 1;
+  let fieldBlockJustify = "L";
 
   for (const cmd of commands) {
     // Handle ^A + font_letter (^A0, ^AA, ^AB, etc.) — font letter is part of command code
@@ -146,15 +155,22 @@ export function parseZPL(code: string): ZPLParseResult {
         const o = parts[0].replace(/[^NRIB]/g, "");
         if (o) currentOrientation = o;
       }
-      if (parts[1]) currentFontH = Number(parts[1]) || 30;
-      if (parts[2]) currentFontW = Number(parts[2]) || currentFontH;
+      if (parts[1]) {
+        currentFontH = Number(parts[1]) || currentFontH;
+        // ZPL spec: if w omitted, w = h
+        currentFontW = parts[2] ? Number(parts[2]) || currentFontH : currentFontH;
+      }
       continue;
     }
 
     // Handle ^B + barcode_type (^B0-^B9, ^BA-^BZ) — barcode type is part of command code
     if (cmd.code.startsWith("^B") && cmd.code.length === 3 && cmd.code !== "^BY") {
       barcodeType = cmd.code;
-      if (cmd.params[1]) barcodeHeight = Number(cmd.params[1]) || barcodeHeight;
+      // params[0] = orientation, params[1] = height (overrides ^BY default)
+      if (cmd.params[1]) {
+        const h = Number(cmd.params[1]);
+        if (h > 0) barcodeHeight = h;
+      }
       continue;
     }
 
@@ -181,15 +197,19 @@ export function parseZPL(code: string): ZPLParseResult {
         break;
 
       case "^LH":
-        // Label home — offset for all fields
+        // Label home — offset added to all ^FO positions
+        labelHomeX = Number(cmd.params[0] ?? 0);
+        labelHomeY = Number(cmd.params[1] ?? 0);
         break;
 
       case "^LS":
-        // Label shift
+        // Label shift — horizontal offset for all fields
+        labelShift = Number(cmd.params[0] ?? 0);
         break;
 
       case "^LT":
-        // Label top
+        // Label top — vertical offset (-120 to 120)
+        labelTop = Number(cmd.params[0] ?? 0);
         break;
 
       case "^LR":
@@ -236,14 +256,21 @@ export function parseZPL(code: string): ZPLParseResult {
 
       // ===== FIELD COMMANDS =====
       case "^FO":
-        fieldX = Number(cmd.params[0] ?? 0);
-        fieldY = Number(cmd.params[1] ?? 0);
+        // ^FO is relative to ^LH, plus ^LS horizontal and ^LT vertical offset
+        fieldX = Number(cmd.params[0] ?? 0) + labelHomeX + labelShift;
+        fieldY = Number(cmd.params[1] ?? 0) + labelHomeY + labelTop;
         fieldReverse = false;
+        fieldBaseline = false;
+        fieldBlockWidth = 0;
         break;
 
       case "^FT":
-        fieldX = Number(cmd.params[0] ?? 0);
-        fieldY = Number(cmd.params[1] ?? 0);
+        // ^FT uses baseline positioning (y = bottom of text, not top)
+        // ^FT is also relative to ^LH + ^LS + ^LT
+        fieldX = Number(cmd.params[0] ?? 0) + labelHomeX + labelShift;
+        fieldY = Number(cmd.params[1] ?? 0) + labelHomeY + labelTop;
+        fieldBaseline = true;
+        fieldBlockWidth = 0;
         break;
 
       case "^FD":
@@ -251,31 +278,48 @@ export function parseZPL(code: string): ZPLParseResult {
         fieldData = cmd.rawParams;
         break;
 
-      case "^FS":
+      case "^FS": {
         // Field separator — if there's pending data, create element
         if (fieldData) {
+          // Adjust y for baseline positioning (^FT): convert baseline to top-left
+          const adjustedY = fieldBaseline ? fieldY - currentFontH : fieldY;
+
           if (barcodeType) {
-            // Barcode field — skip for preview elements (would need image rendering)
+            // Barcode field — store as raw ZPL with ^BY module width for preview
+            elements.push({
+              type: "raw",
+              content: `^BY${barcodeModuleWidth}^FO${fieldX},${adjustedY}${barcodeType}N,${barcodeHeight},Y^FD${fieldData}^FS`,
+            });
             barcodeType = "";
           } else {
-            // Text field
+            // Text field — store font and dot dimensions for accurate preview
+            const align = fieldBlockWidth > 0 && fieldBlockJustify === "C"
+              ? "center" as const
+              : fieldBlockWidth > 0 && fieldBlockJustify === "R"
+                ? "right" as const
+                : undefined;
             elements.push({
               type: "text",
               content: fieldData,
               options: {
                 x: fieldX,
-                y: fieldY,
-                size: Math.max(1, Math.round(currentFontH / 12)),
+                y: adjustedY,
+                font: currentFont,
+                size: 1,
                 xScale: currentFontW,
                 yScale: currentFontH,
                 reverse: fieldReverse || undefined,
+                maxWidth: fieldBlockWidth || undefined,
+                align,
               },
             });
           }
           fieldData = "";
         }
         fieldReverse = false;
+        fieldBaseline = false;
         break;
+      }
 
       case "^FR":
         fieldReverse = true;
@@ -307,10 +351,12 @@ export function parseZPL(code: string): ZPLParseResult {
         break;
 
       case "^CF":
-        // Change default font
+        // Change default font: ^CFf,h,w — if w omitted, w = h
         if (cmd.params[0]) currentFont = cmd.params[0];
-        if (cmd.params[1]) currentFontH = Number(cmd.params[1]);
-        if (cmd.params[2]) currentFontW = Number(cmd.params[2]);
+        if (cmd.params[1]) {
+          currentFontH = Number(cmd.params[1]);
+          currentFontW = cmd.params[2] ? Number(cmd.params[2]) : currentFontH;
+        }
         break;
 
       case "^CI":
@@ -323,7 +369,10 @@ export function parseZPL(code: string): ZPLParseResult {
 
       // ===== TEXT BLOCK =====
       case "^FB":
-        // Field block (word wrap)
+        // Field block: ^FBwidth,maxLines,lineSpacing,justify,hangingIndent
+        fieldBlockWidth = Number(cmd.params[0] ?? 0);
+        fieldBlockMaxLines = Number(cmd.params[1] ?? 1);
+        fieldBlockJustify = (cmd.params[3] ?? "L").toUpperCase();
         break;
 
       case "^TB":
@@ -332,7 +381,10 @@ export function parseZPL(code: string): ZPLParseResult {
 
       // ===== BARCODE COMMANDS =====
       case "^BY":
-        // Bar code field default
+        // Bar code field default: ^BYw,r,h
+        if (cmd.params[0]) barcodeModuleWidth = Number(cmd.params[0]) || barcodeModuleWidth;
+        // params[1] = wide-to-narrow ratio (not used for Code 128)
+        if (cmd.params[2]) barcodeHeight = Number(cmd.params[2]) || barcodeHeight;
         break;
 
       // Barcode commands are handled above (^B + type letter/digit)
@@ -342,21 +394,47 @@ export function parseZPL(code: string): ZPLParseResult {
         const w = Number(cmd.params[0] ?? 1);
         const h = Number(cmd.params[1] ?? 1);
         const t = Number(cmd.params[2] ?? 1);
-        const r = Number(cmd.params[4] ?? 0);
-        elements.push({
-          type: "box",
-          options: { x: fieldX, y: fieldY, width: w, height: h, thickness: t, radius: r },
-        });
+        const color = (cmd.params[3] ?? "B").toUpperCase();
+        const rIndex = Number(cmd.params[4] ?? 0);
+        // ZPL corner radius: index 0-8 → dots = (index/8) * (shorter_side/2)
+        const r = rIndex > 0 ? (rIndex / 8) * (Math.min(w, h) / 2) : 0;
+        // ^FR XORs the field: black↔white. Color W also inverts.
+        const isWhite = fieldReverse ? color !== "W" : color === "W";
+        const isFilled = t >= Math.min(w, h);
+        if (isWhite && isFilled) {
+          // White filled box → erase region (used for XOR effect in logos etc.)
+          elements.push({
+            type: "erase",
+            options: { x: fieldX, y: fieldY, width: w, height: h },
+          });
+        } else {
+          elements.push({
+            type: "box",
+            options: { x: fieldX, y: fieldY, width: w, height: h, thickness: t, radius: r },
+          });
+        }
+        fieldReverse = false;
         break;
       }
 
       case "^GC": {
         const d = Number(cmd.params[0] ?? 1);
         const t = Number(cmd.params[1] ?? 1);
-        elements.push({
-          type: "circle",
-          options: { x: fieldX, y: fieldY, diameter: d, thickness: t },
-        });
+        const gcColor = (cmd.params[2] ?? "B").toUpperCase();
+        const gcIsWhite = fieldReverse ? gcColor !== "W" : gcColor === "W";
+        if (gcIsWhite && t >= d / 2) {
+          // White filled circle → erase region
+          elements.push({
+            type: "erase",
+            options: { x: fieldX, y: fieldY, width: d, height: d },
+          });
+        } else {
+          elements.push({
+            type: "circle",
+            options: { x: fieldX, y: fieldY, diameter: d, thickness: t },
+          });
+        }
+        fieldReverse = false;
         break;
       }
 
@@ -364,7 +442,10 @@ export function parseZPL(code: string): ZPLParseResult {
         const w = Number(cmd.params[0] ?? 1);
         const h = Number(cmd.params[1] ?? 1);
         const t = Number(cmd.params[2] ?? 1);
-        const dir = cmd.params[4] ?? "R";
+        // params[3] = color, params[4] = orientation (R or L)
+        const dir = (cmd.params[4] ?? "R").toUpperCase();
+        // Note: ^FR on diagonal lines inverts color — for SVG preview we skip
+        // white diagonal lines as they're rarely used and hard to render in SVG
         if (dir === "R") {
           elements.push({
             type: "line",
@@ -376,6 +457,7 @@ export function parseZPL(code: string): ZPLParseResult {
             options: { x1: fieldX + w, y1: fieldY, x2: fieldX, y2: fieldY + h, thickness: t },
           });
         }
+        fieldReverse = false;
         break;
       }
 
@@ -579,11 +661,6 @@ export function parseZPL(code: string): ZPLParseResult {
       case "~PS":
       case "~RO":
       case "~TA":
-        break;
-
-      // Catch FD-FV range (combined spec file)
-      case "^FD":
-      case "^FV":
         break;
 
       default:

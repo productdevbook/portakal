@@ -101,7 +101,8 @@ describe("ZPL Parser — Graphics", () => {
       expect(result.elements[0].options.width).toBe(200);
       expect(result.elements[0].options.height).toBe(100);
       expect(result.elements[0].options.thickness).toBe(3);
-      expect(result.elements[0].options.radius).toBe(5);
+      // ZPL rounding index 5 → (5/8) * (min(200,100)/2) = 31.25 dots
+      expect(result.elements[0].options.radius).toBe(31.25);
     }
   });
 

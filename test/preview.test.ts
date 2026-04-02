@@ -40,12 +40,13 @@ describe("SVG preview renderer", () => {
     expect(svg).toContain('font-weight="bold"');
   });
 
-  it("renders reverse text with black background", () => {
+  it("renders reverse text as white (XOR approximation)", () => {
     const svg = renderPreview(
       label({ width: 40, height: 30 }).text("Reverse", { x: 10, y: 10, reverse: true }).resolve(),
     );
-    expect(svg).toContain('fill="#000"');
+    // ^FR is XOR — in SVG we approximate with white text (assumes dark background)
     expect(svg).toContain('fill="#fff"');
+    expect(svg).toContain("Reverse");
   });
 
   it("renders box as rect with stroke", () => {

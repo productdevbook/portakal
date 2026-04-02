@@ -15,11 +15,19 @@ src/
   index.ts                  # Main API — all exports
   types.ts                  # Shared types
   errors.ts                 # Custom error classes
-  core/
-    builder.ts              # Label builder (fluent API)
-    element.ts              # Base element types
-    image.ts                # Image processing (monochrome bitmap)
-  languages/
+  builder.ts                # Label builder (fluent API)
+  core.ts                   # Core logic
+  image.ts                  # Image processing (monochrome bitmap)
+  convert.ts                # Cross-language converter
+  encoding.ts               # Encoding utilities
+  markup.ts                 # Markup utilities
+  preview.ts                # Preview generation
+  profiles.ts               # Printer profiles
+  receipt.ts                # Receipt mode
+  transport.ts              # Transport layer (USB, network, serial, BT)
+  utils.ts                  # Shared utilities
+  validate.ts               # Label validation
+  languages/                # Compilers (label → printer language)
     tsc.ts                  # TSC/TSPL printer language
     zpl.ts                  # Zebra ZPL II
     epl.ts                  # Eltron EPL2
@@ -29,50 +37,64 @@ src/
     ipl.ts                  # Intermec IPL
     sbpl.ts                 # SATO SBPL
     starprnt.ts             # Star PRNT
-    fingerprint.ts          # Honeywell Fingerprint
-  transport/
-    usb.ts                  # USB connection
-    network.ts              # TCP/IP socket
-    serial.ts               # Serial port
-    bluetooth.ts            # Bluetooth
+  parsers/                  # Parsers (printer language → structured data)
+    tsc.ts                  # TSC/TSPL parser
+    zpl.ts                  # Zebra ZPL II parser
+    epl.ts                  # Eltron EPL2 parser
+    escpos.ts               # ESC/POS parser
+    cpcl.ts                 # Comtec CPCL parser
+    dpl.ts                  # Datamax DPL parser
+    ipl.ts                  # Intermec IPL parser
+    sbpl.ts                 # SATO SBPL parser
+    starprnt.ts             # Star PRNT parser
+  lang/                     # Language modules (compile + parse + preview + validate)
+    tsc.ts                  # TSC module
+    zpl.ts                  # ZPL module
+    epl.ts                  # EPL module
+    escpos.ts               # ESC/POS module
+    cpcl.ts                 # CPCL module
+    dpl.ts                  # DPL module
+    ipl.ts                  # IPL module
+    sbpl.ts                 # SBPL module
+    starprnt.ts             # Star PRNT module
 test/
   *.test.ts                 # Test files
 ```
 
 ## Public API
 
-Single entry: `portakal`. Builder pattern for constructing labels:
+Tree-shakeable language modules — import only what you need:
 
 ```ts
-import { label } from "portakal";
+import { label } from "portakal/core";
+import { zpl } from "portakal/lang/zpl";
 
-// Printer-native barcode/QR (printer's built-in encoder handles it)
-const cmd = label({ width: 40, height: 30, unit: "mm" })
+const myLabel = label({ width: 40, height: 30, unit: "mm" })
   .text("Hello World", { x: 10, y: 10, font: "A", size: 2 })
   .barcode("123456789", { x: 10, y: 50, type: "code128", height: 60 })
   .qrcode("https://example.com", { x: 10, y: 120, size: 6 })
   .image(buffer, { x: 200, y: 10, width: 100 })
-  .print(2)
-  .toTSC(); // or .toZPL(), .toEPL(), .toESCPOS(), etc.
+  .print(2);
+
+const code = zpl.compile(myLabel);   // ZPL II commands
+const svg  = zpl.preview(myLabel);   // SVG preview with ZPL font metrics
 ```
 
-### Using with `etiket` for pre-rendered barcode/QR images
+### Available language modules
 
 ```ts
-import { label } from "portakal";
-import { barcodePNG, qrcodePNG } from "etiket";
-
-// Generate barcode/QR as PNG with etiket, then embed as image
-const barcodeImg = barcodePNG("123456789", { format: "code128" });
-const qrImg = qrcodePNG("https://example.com");
-
-const cmd = label({ width: 40, height: 30, unit: "mm" })
-  .text("Product Label", { x: 10, y: 5 })
-  .image(barcodeImg, { x: 10, y: 40, width: 200 })
-  .image(qrImg, { x: 220, y: 40, width: 80 })
-  .print(1)
-  .toZPL();
+import { tsc } from "portakal/lang/tsc";       // TSC/TSPL2
+import { zpl } from "portakal/lang/zpl";       // Zebra ZPL II
+import { epl } from "portakal/lang/epl";       // Eltron EPL2
+import { escpos } from "portakal/lang/escpos"; // ESC/POS
+import { cpcl } from "portakal/lang/cpcl";     // Comtec CPCL
+import { dpl } from "portakal/lang/dpl";       // Datamax DPL
+import { ipl } from "portakal/lang/ipl";       // Intermec IPL
+import { sbpl } from "portakal/lang/sbpl";     // SATO SBPL
+import { starprnt } from "portakal/lang/starprnt"; // Star PRNT
 ```
+
+Each module exports: `compile()`, `parse()`, `preview()`, `validate()`.
 
 ## Build & Scripts
 

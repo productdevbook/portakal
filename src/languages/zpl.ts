@@ -22,14 +22,14 @@ function compileElement(el: LabelElement): string {
       const rot = zplRotation(o.rotation ?? 0);
       const font = o.font ?? "0";
       const h = (o.size ?? 1) * 30;
-      const w = h;
+      const w = o.xScale ?? h;
 
       let cmd = `^FO${x},${y}`;
       cmd += `^A${font}${rot},${h},${w}`;
 
       if (o.maxWidth) {
         const justify = o.align === "center" ? "C" : o.align === "right" ? "R" : "L";
-        const lines = Math.ceil(h / 30) + 5;
+        const lines = 999;
         cmd += `^FB${o.maxWidth},${lines},0,${justify}`;
       }
 
@@ -59,8 +59,11 @@ function compileElement(el: LabelElement): string {
     case "box": {
       const o = el.options;
       const t = o.thickness ?? 1;
-      const r = o.radius ?? 0;
-      return `^FO${o.x},${o.y}^GB${o.width},${o.height},${t},B,${r}^FS`;
+      const radiusDots = o.radius ?? 0;
+      // Convert dot radius to ZPL 0-8 index: index = radius / (shorter_side/2) * 8
+      const maxR = Math.min(o.width, o.height) / 2;
+      const rIndex = maxR > 0 && radiusDots > 0 ? Math.min(8, Math.round((radiusDots / maxR) * 8)) : 0;
+      return `^FO${o.x},${o.y}^GB${o.width},${o.height},${t},B,${rIndex}^FS`;
     }
 
     case "line": {
