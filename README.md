@@ -13,7 +13,10 @@
 </p>
 
 > [!NOTE]
-> **Barcode/QR generation is NOT in this package.** Use [`etiket`](https://github.com/productdevbook/etiket) for barcode & QR code generation (SVG/PNG). portakal sends printer-native barcode/QR commands (the printer's built-in encoder) OR accepts pre-rendered images from `etiket` for pixel-perfect output.
+> portakal has **two ways** to print barcodes and QR codes:
+>
+> 1. **Printer-native** (`.barcode()` / `.qrcode()`) — sends commands to the printer's built-in encoder. Fast, zero dependencies, minimal data transfer. Works for most use cases.
+> 2. **Software-rendered** (`.image()` + [`etiket`](https://github.com/productdevbook/etiket)) — renders barcodes/QR codes as images on the host, sends pixels to the printer. Pixel-perfect output, 40+ formats, styled QR codes, guaranteed consistency across all printers. You install `etiket` yourself — portakal stays zero-dependency.
 
 ## Quick Start
 
@@ -21,10 +24,14 @@
 npm install portakal
 ```
 
+### Printer-native barcode/QR (zero dependencies)
+
+The printer's built-in encoder handles barcode/QR generation. Fast, minimal data:
+
 ```ts
 import { label } from "portakal";
 
-const tsc = label({ width: 40, height: 30, unit: "mm" })
+const cmd = label({ width: 40, height: 30, unit: "mm" })
   .text("Hello World", { x: 10, y: 10, size: 2 })
   .barcode("123456789", { type: "code128", x: 10, y: 50, height: 60 })
   .qrcode("https://example.com", { x: 10, y: 120, ecc: "M", size: 6 })
@@ -41,23 +48,38 @@ cmd.toEPL(); // Eltron EPL2 — desktop (LP/TLP 2824, GX420, ZD220)
 cmd.toESCPOS(); // ESC/POS — receipt printers (Epson, Bixolon, Star, Citizen)
 ```
 
-## Using with etiket
+### Software-rendered barcode/QR (with etiket)
 
-For pixel-perfect barcode/QR images (rendered by software, not the printer's built-in encoder):
+For pixel-perfect output, styled QR codes, or when the printer doesn't support a format natively:
+
+```sh
+npm install portakal etiket
+```
 
 ```ts
 import { label } from "portakal";
 import { barcodePNG, qrcodePNG } from "etiket";
 
-const barcodeImg = barcodePNG("123456789", { type: "code128" });
-const qrImg = qrcodePNG("https://example.com");
-
+// etiket renders barcode/QR as PNG → portakal sends it as an image to the printer
 const cmd = label({ width: 40, height: 30, unit: "mm" })
   .text("Product Label", { x: 10, y: 5 })
-  .image(barcodeImg, { x: 10, y: 40, width: 200 })
-  .image(qrImg, { x: 220, y: 40, width: 80 })
+  .image(barcodePNG("123456789", { type: "code128" }), { x: 10, y: 40, width: 200 })
+  .image(qrcodePNG("https://example.com"), { x: 220, y: 40, width: 80 })
   .toZPL();
 ```
+
+### When to use which?
+
+|                                       | Printer-native (`.barcode()` / `.qrcode()`) | Software-rendered (`.image()` + `etiket`) |
+| :------------------------------------ | :------------------------------------------ | :---------------------------------------- |
+| **Dependencies**                      | None                                        | `etiket` (you install it)                 |
+| **Speed**                             | Fast (only sends command text)              | Slower (sends pixel data)                 |
+| **Data size**                         | Small (~50 bytes)                           | Larger (bitmap data)                      |
+| **Consistency**                       | Varies by printer model                     | Identical on every printer                |
+| **Format support**                    | Depends on printer (10-20 types)            | 40+ barcode types, styled QR              |
+| **Styled QR** (dots, gradients, logo) | Not possible                                | Full support via etiket                   |
+| **Works on cheap printers**           | May not support QR/PDF417                   | Always works (it's just an image)         |
+| **Best for**                          | Simple labels, fast printing                | Pixel-perfect, guaranteed output          |
 
 ## API
 
