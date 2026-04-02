@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { tsc } from "../src/lang/tsc";
 import { label } from "../src/builder";
 
 describe("Printer profile integration", () => {
@@ -24,8 +25,8 @@ describe("Printer profile integration", () => {
   });
 
   it("compiles to correct language based on profile", () => {
-    const tsc = label({ width: 40, height: 30, printer: "tsc-te200" }).toTSC();
-    expect(tsc).toContain("SIZE");
-    expect(tsc).toContain("PRINT");
+    const output = tsc.compile(label({ width: 40, height: 30, printer: "tsc-te200" }));
+    expect(output).toContain("SIZE");
+    expect(output).toContain("PRINT");
   });
 });

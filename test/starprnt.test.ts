@@ -1,20 +1,21 @@
 import { describe, expect, it } from "vitest";
+import { starprnt } from "../src/lang/starprnt";
 import { label } from "../src/builder";
 
 describe("Star PRNT compiler", () => {
   it("starts with ESC @ (initialize)", () => {
-    const output = label({ width: 80 }).toStarPRNT();
+    const output = starprnt.compile(label({ width: 80 }));
     expect(output[0]).toBe(0x1b);
     expect(output[1]).toBe(0x40);
   });
 
   it("returns Uint8Array", () => {
-    const output = label({ width: 80 }).toStarPRNT();
+    const output = starprnt.compile(label({ width: 80 }));
     expect(output).toBeInstanceOf(Uint8Array);
   });
 
   it("ends with partial cut (ESC d 1)", () => {
-    const output = label({ width: 80 }).toStarPRNT();
+    const output = starprnt.compile(label({ width: 80 }));
     const bytes = Array.from(output);
     const len = bytes.length;
     expect(bytes[len - 3]).toBe(0x1b);
@@ -23,13 +24,13 @@ describe("Star PRNT compiler", () => {
   });
 
   it("generates text with line feed", () => {
-    const output = label({ width: 80 }).text("Hello Star").toStarPRNT();
+    const output = starprnt.compile(label({ width: 80 }).text("Hello Star"));
     const text = new TextDecoder().decode(output);
     expect(text).toContain("Hello Star");
   });
 
   it("generates Star alignment: ESC GS a n", () => {
-    const output = label({ width: 80 }).text("Center", { align: "center" }).toStarPRNT();
+    const output = starprnt.compile(label({ width: 80 }).text("Center", { align: "center" }));
     const bytes = Array.from(output);
     // ESC GS a 1 (center)
     const idx = bytes.findIndex(
@@ -40,7 +41,7 @@ describe("Star PRNT compiler", () => {
   });
 
   it("generates Star bold: ESC E (on) / ESC F (off)", () => {
-    const output = label({ width: 80 }).text("Bold", { bold: true }).toStarPRNT();
+    const output = starprnt.compile(label({ width: 80 }).text("Bold", { bold: true }));
     const bytes = Array.from(output);
     // ESC E (bold on)
     const onIdx = bytes.findIndex((b, i) => b === 0x1b && bytes[i + 1] === 0x45);
@@ -51,7 +52,7 @@ describe("Star PRNT compiler", () => {
   });
 
   it("generates Star size: ESC i h w", () => {
-    const output = label({ width: 80 }).text("Big", { size: 3 }).toStarPRNT();
+    const output = starprnt.compile(label({ width: 80 }).text("Big", { size: 3 }));
     const bytes = Array.from(output);
     const idx = bytes.findIndex((b, i) => b === 0x1b && bytes[i + 1] === 0x69);
     expect(idx).toBeGreaterThan(-1);
@@ -66,7 +67,7 @@ describe("Star PRNT compiler", () => {
       height: 4,
       bytesPerRow: 1,
     };
-    const output = label({ width: 80 }).image(bitmap).toStarPRNT();
+    const output = starprnt.compile(label({ width: 80 }).image(bitmap));
     const bytes = Array.from(output);
 
     // Enter raster: ESC * r A
@@ -93,7 +94,7 @@ describe("Star PRNT compiler", () => {
 
   it("generates raw passthrough", () => {
     const raw = new Uint8Array([0x07]); // BEL (cash drawer)
-    const output = label({ width: 80 }).raw(raw).toStarPRNT();
+    const output = starprnt.compile(label({ width: 80 }).raw(raw));
     expect(Array.from(output)).toContain(0x07);
   });
 });

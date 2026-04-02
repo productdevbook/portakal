@@ -4,12 +4,13 @@
  *
  * @example
  * ```ts
- * markup(`
+ * import { tsc } from "./lang/tsc";
+ * tsc.compile(markup(`
  *   <label width="40mm" height="30mm">
  *     <text x="10" y="10" size="2" bold>Hello World</text>
  *     <box x="5" y="5" width="310" height="230" border="2" />
  *   </label>
- * `).toTSC()
+ * `));
  * ```
  */
 

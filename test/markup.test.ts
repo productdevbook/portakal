@@ -1,110 +1,138 @@
 import { describe, expect, it } from "vitest";
+import { cpcl } from "../src/lang/cpcl";
+import { dpl } from "../src/lang/dpl";
+import { epl } from "../src/lang/epl";
+import { escpos } from "../src/lang/escpos";
+import { ipl } from "../src/lang/ipl";
+import { renderPreview } from "../src/preview";
+import { sbpl } from "../src/lang/sbpl";
+import { starprnt } from "../src/lang/starprnt";
+import { tsc } from "../src/lang/tsc";
+import { zpl } from "../src/lang/zpl";
 import { markup } from "../src/markup";
 
 describe("markup — HTML-like label DSL", () => {
   it("parses basic label with text", () => {
-    const tsc = markup(`
+    const output = tsc.compile(
+      markup(`
       <label width="40mm" height="30mm">
         <text x="10" y="10" size="2">Hello World</text>
       </label>
-    `).toTSC();
+    `),
+    );
 
-    expect(tsc).toContain("SIZE 40 mm,30 mm");
-    expect(tsc).toContain('"Hello World"');
-    expect(tsc).toContain("PRINT");
+    expect(output).toContain("SIZE 40 mm,30 mm");
+    expect(output).toContain('"Hello World"');
+    expect(output).toContain("PRINT");
   });
 
   it("parses text with bold and underline", () => {
-    const tsc = markup(`
+    const output = tsc.compile(
+      markup(`
       <label width="40mm" height="30mm">
         <text x="10" y="10" bold underline>Styled Text</text>
       </label>
-    `).toTSC();
+    `),
+    );
 
-    expect(tsc).toContain('"Styled Text"');
+    expect(output).toContain('"Styled Text"');
   });
 
   it("parses self-closing tags", () => {
-    const tsc = markup(`
+    const output = tsc.compile(
+      markup(`
       <label width="40mm" height="30mm">
         <line x1="5" y1="50" x2="315" y2="50" thickness="2" />
         <box x="5" y="5" width="310" height="230" border="2" />
         <circle x="250" y="150" diameter="60" />
       </label>
-    `).toTSC();
+    `),
+    );
 
-    expect(tsc).toContain("BAR");
-    expect(tsc).toContain("BOX");
-    expect(tsc).toContain("CIRCLE");
+    expect(output).toContain("BAR");
+    expect(output).toContain("BOX");
+    expect(output).toContain("CIRCLE");
   });
 
   it("parses box with radius", () => {
-    const tsc = markup(`
+    const output = tsc.compile(
+      markup(`
       <label width="40mm" height="30mm">
         <box x="10" y="10" width="200" height="100" border="2" radius="5" />
       </label>
-    `).toTSC();
+    `),
+    );
 
-    expect(tsc).toContain(",5");
+    expect(output).toContain(",5");
   });
 
   it("parses ellipse", () => {
-    const tsc = markup(`
+    const output = tsc.compile(
+      markup(`
       <label width="40mm" height="30mm">
         <ellipse x="50" y="50" width="100" height="60" thickness="2" />
       </label>
-    `).toTSC();
+    `),
+    );
 
-    expect(tsc).toContain("ELLIPSE");
+    expect(output).toContain("ELLIPSE");
   });
 
   it("parses reverse and erase", () => {
-    const tsc = markup(`
+    const output = tsc.compile(
+      markup(`
       <label width="40mm" height="30mm">
         <reverse x="10" y="10" width="200" height="30" />
         <erase x="50" y="50" width="20" height="20" />
       </label>
-    `).toTSC();
+    `),
+    );
 
-    expect(tsc).toContain("REVERSE");
-    expect(tsc).toContain("ERASE");
+    expect(output).toContain("REVERSE");
+    expect(output).toContain("ERASE");
   });
 
   it("compiles to ZPL", () => {
-    const zpl = markup(`
+    const output = zpl.compile(
+      markup(`
       <label width="40mm" height="30mm">
         <text x="50" y="50" size="2">ZPL Label</text>
         <box x="10" y="10" width="300" height="220" border="2" />
       </label>
-    `).toZPL();
+    `),
+    );
 
-    expect(zpl).toContain("^XA");
-    expect(zpl).toContain("^FDZPL Label^FS");
-    expect(zpl).toContain("^GB");
-    expect(zpl).toContain("^XZ");
+    expect(output).toContain("^XA");
+    expect(output).toContain("^FDZPL Label^FS");
+    expect(output).toContain("^GB");
+    expect(output).toContain("^XZ");
   });
 
   it("compiles to EPL", () => {
-    const epl = markup(`
+    const output = epl.compile(
+      markup(`
       <label width="40mm" height="30mm">
         <text x="10" y="10">EPL Label</text>
       </label>
-    `).toEPL();
+    `),
+    );
 
-    expect(epl).toContain("N");
-    expect(epl).toContain('"EPL Label"');
+    expect(output).toContain("N");
+    expect(output).toContain('"EPL Label"');
   });
 
   it("compiles to ESC/POS", () => {
-    const escpos = markup(`
+    const output = escpos.compile(
+      markup(`
       <label width="80mm">
         <text align="center" size="2" bold>My Store</text>
         <text>Total: $29.48</text>
       </label>
-    `).toESCPOS();
+    `),
+    );
 
-    expect(escpos).toBeInstanceOf(Uint8Array);
-    expect(escpos.length).toBeGreaterThan(10);
+    expect(output).toBeInstanceOf(Uint8Array);
+    expect(output.length).toBeGreaterThan(10);
   });
 
   it("compiles to all 9 languages", () => {
@@ -114,24 +142,26 @@ describe("markup — HTML-like label DSL", () => {
       </label>
     `);
 
-    expect(m.toTSC()).toContain("TEXT");
-    expect(m.toZPL()).toContain("^XA");
-    expect(m.toEPL()).toContain("N");
-    expect(m.toCPCL()).toContain("PRINT");
-    expect(m.toDPL()).toContain("E");
-    expect(m.toSBPL()).toContain("\x1bA");
-    expect(m.toIPL()).toContain("\x02");
-    expect(m.toESCPOS()).toBeInstanceOf(Uint8Array);
-    expect(m.toStarPRNT()).toBeInstanceOf(Uint8Array);
+    expect(tsc.compile(m)).toContain("TEXT");
+    expect(zpl.compile(m)).toContain("^XA");
+    expect(epl.compile(m)).toContain("N");
+    expect(cpcl.compile(m)).toContain("PRINT");
+    expect(dpl.compile(m)).toContain("E");
+    expect(sbpl.compile(m)).toContain("\x1bA");
+    expect(ipl.compile(m)).toContain("\x02");
+    expect(escpos.compile(m)).toBeInstanceOf(Uint8Array);
+    expect(starprnt.compile(m)).toBeInstanceOf(Uint8Array);
   });
 
   it("renders preview", () => {
-    const svg = markup(`
+    const svg = renderPreview(
+      markup(`
       <label width="40mm" height="30mm">
         <text x="10" y="10" size="2">Preview Test</text>
         <box x="5" y="5" width="310" height="230" border="2" />
       </label>
-    `).toPreview();
+    `).resolve(),
+    );
 
     expect(svg).toContain("<svg");
     expect(svg).toContain("Preview Test");
@@ -161,21 +191,24 @@ describe("markup — HTML-like label DSL", () => {
   });
 
   it("handles multiple text elements", () => {
-    const tsc = markup(`
+    const output = tsc.compile(
+      markup(`
       <label width="40mm" height="30mm">
         <text x="10" y="10" size="2">Title</text>
         <text x="10" y="35">Subtitle</text>
         <text x="10" y="55" size="1">Description</text>
       </label>
-    `).toTSC();
+    `),
+    );
 
-    expect(tsc).toContain('"Title"');
-    expect(tsc).toContain('"Subtitle"');
-    expect(tsc).toContain('"Description"');
+    expect(output).toContain('"Title"');
+    expect(output).toContain('"Subtitle"');
+    expect(output).toContain('"Description"');
   });
 
   it("handles complex shipping label", () => {
-    const tsc = markup(`
+    const output = tsc.compile(
+      markup(`
       <label width="100mm" height="150mm" dpi="203">
         <text x="10" y="10" size="2" bold>FROM: Warehouse A</text>
         <text x="10" y="40" size="3" bold>TO: John Doe</text>
@@ -183,13 +216,14 @@ describe("markup — HTML-like label DSL", () => {
         <line x1="5" y1="110" x2="780" y2="110" thickness="2" />
         <box x="5" y="5" width="780" height="1170" border="3" />
       </label>
-    `).toTSC();
+    `),
+    );
 
-    expect(tsc).toContain("SIZE 100 mm,150 mm");
-    expect(tsc).toContain('"FROM: Warehouse A"');
-    expect(tsc).toContain('"TO: John Doe"');
-    expect(tsc).toContain("BOX");
-    expect(tsc).toContain("BAR");
+    expect(output).toContain("SIZE 100 mm,150 mm");
+    expect(output).toContain('"FROM: Warehouse A"');
+    expect(output).toContain('"TO: John Doe"');
+    expect(output).toContain("BOX");
+    expect(output).toContain("BAR");
   });
 
   it("throws on missing <label> root", () => {
@@ -197,12 +231,14 @@ describe("markup — HTML-like label DSL", () => {
   });
 
   it("handles raw content", () => {
-    const tsc = markup(`
+    const output = tsc.compile(
+      markup(`
       <label width="40mm" height="30mm">
         <raw>SET CUTTER ON</raw>
       </label>
-    `).toTSC();
+    `),
+    );
 
-    expect(tsc).toContain("SET CUTTER ON");
+    expect(output).toContain("SET CUTTER ON");
   });
 });

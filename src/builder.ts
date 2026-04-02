@@ -14,16 +14,6 @@ import type {
 } from "./types";
 import { InvalidConfigError } from "./errors";
 import { toDots } from "./utils";
-import { compileToTSC } from "./languages/tsc";
-import { compileToZPL } from "./languages/zpl";
-import { compileToEPL } from "./languages/epl";
-import { compileToESCPOS } from "./languages/escpos";
-import { compileToCPCL } from "./languages/cpcl";
-import { compileToDPL } from "./languages/dpl";
-import { compileToSBPL } from "./languages/sbpl";
-import { compileToStarPRNT } from "./languages/starprnt";
-import { compileToIPL } from "./languages/ipl";
-import { renderPreview } from "./preview";
 import { getProfile } from "./profiles";
 
 export class LabelBuilder {
@@ -31,7 +21,6 @@ export class LabelBuilder {
   private readonly elements: LabelElement[] = [];
 
   constructor(config: LabelConfig) {
-    // Apply printer profile defaults if specified
     if (config.printer) {
       const profile = getProfile(config.printer);
       if (profile) {
@@ -110,49 +99,8 @@ export class LabelBuilder {
       elements: this.elements,
     };
   }
-
-  toTSC(): string {
-    return compileToTSC(this.resolve());
-  }
-
-  toZPL(): string {
-    return compileToZPL(this.resolve());
-  }
-
-  toEPL(): string {
-    return compileToEPL(this.resolve());
-  }
-
-  toESCPOS(): Uint8Array {
-    return compileToESCPOS(this.resolve());
-  }
-
-  toCPCL(): string {
-    return compileToCPCL(this.resolve());
-  }
-
-  toDPL(): string {
-    return compileToDPL(this.resolve());
-  }
-
-  toSBPL(): string {
-    return compileToSBPL(this.resolve());
-  }
-
-  toStarPRNT(): Uint8Array {
-    return compileToStarPRNT(this.resolve());
-  }
-
-  toIPL(): string {
-    return compileToIPL(this.resolve());
-  }
-
-  toPreview(): string {
-    return renderPreview(this.resolve());
-  }
 }
 
-/** Create a new label builder */
 export function label(config: LabelConfig): LabelBuilder {
   return new LabelBuilder(config);
 }

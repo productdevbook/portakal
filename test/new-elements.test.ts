@@ -1,18 +1,42 @@
 import { describe, expect, it } from "vitest";
+import { cpcl } from "../src/lang/cpcl";
+import { dpl } from "../src/lang/dpl";
+import { epl } from "../src/lang/epl";
+import { escpos } from "../src/lang/escpos";
+import { ipl } from "../src/lang/ipl";
+import { renderPreview } from "../src/preview";
+import { sbpl } from "../src/lang/sbpl";
+import { starprnt } from "../src/lang/starprnt";
+import { tsc } from "../src/lang/tsc";
+import { zpl } from "../src/lang/zpl";
 import { label } from "../src/builder";
 
 describe("Ellipse element", () => {
   it("generates TSC ELLIPSE", () => {
-    const output = label({ width: 40, height: 30 })
-      .ellipse({ x: 50, y: 50, width: 100, height: 60, thickness: 2 })
-      .toTSC();
+    const output = tsc.compile(
+      label({ width: 40, height: 30 }).ellipse({
+        x: 50,
+        y: 50,
+        width: 100,
+        height: 60,
+        thickness: 2,
+      }),
+    );
     expect(output).toContain("ELLIPSE 50,50,100,60,2");
   });
 
   it("renders in preview as SVG ellipse", () => {
-    const svg = label({ width: 40, height: 30 })
-      .ellipse({ x: 50, y: 50, width: 100, height: 60, thickness: 2 })
-      .toPreview();
+    const svg = renderPreview(
+      label({ width: 40, height: 30 })
+        .ellipse({
+          x: 50,
+          y: 50,
+          width: 100,
+          height: 60,
+          thickness: 2,
+        })
+        .resolve(),
+    );
     expect(svg).toContain("<ellipse");
     expect(svg).toContain('rx="50"');
     expect(svg).toContain('ry="30"');
@@ -21,16 +45,16 @@ describe("Ellipse element", () => {
 
 describe("Reverse element", () => {
   it("generates TSC REVERSE", () => {
-    const output = label({ width: 40, height: 30 })
-      .reverse({ x: 10, y: 10, width: 200, height: 30 })
-      .toTSC();
+    const output = tsc.compile(
+      label({ width: 40, height: 30 }).reverse({ x: 10, y: 10, width: 200, height: 30 }),
+    );
     expect(output).toContain("REVERSE 10,10,200,30");
   });
 
   it("renders in preview as black rect", () => {
-    const svg = label({ width: 40, height: 30 })
-      .reverse({ x: 10, y: 10, width: 200, height: 30 })
-      .toPreview();
+    const svg = renderPreview(
+      label({ width: 40, height: 30 }).reverse({ x: 10, y: 10, width: 200, height: 30 }).resolve(),
+    );
     expect(svg).toContain('fill="#000"');
     expect(svg).toContain('width="200"');
   });
@@ -38,16 +62,16 @@ describe("Reverse element", () => {
 
 describe("Erase element", () => {
   it("generates TSC ERASE", () => {
-    const output = label({ width: 40, height: 30 })
-      .erase({ x: 10, y: 10, width: 50, height: 50 })
-      .toTSC();
+    const output = tsc.compile(
+      label({ width: 40, height: 30 }).erase({ x: 10, y: 10, width: 50, height: 50 }),
+    );
     expect(output).toContain("ERASE 10,10,50,50");
   });
 
   it("renders in preview as white rect", () => {
-    const svg = label({ width: 40, height: 30 })
-      .erase({ x: 10, y: 10, width: 50, height: 50 })
-      .toPreview();
+    const svg = renderPreview(
+      label({ width: 40, height: 30 }).erase({ x: 10, y: 10, width: 50, height: 50 }).resolve(),
+    );
     expect(svg).toContain('fill="#fff"');
   });
 });
@@ -60,33 +84,33 @@ describe("All compilers handle new elements without error", () => {
       .erase({ x: 10, y: 10, width: 50, height: 50 });
 
   it("TSC", () => {
-    expect(b().toTSC()).toContain("ELLIPSE");
+    expect(tsc.compile(b())).toContain("ELLIPSE");
   });
   it("ZPL", () => {
-    expect(() => b().toZPL()).not.toThrow();
+    expect(() => zpl.compile(b())).not.toThrow();
   });
   it("EPL", () => {
-    expect(() => b().toEPL()).not.toThrow();
+    expect(() => epl.compile(b())).not.toThrow();
   });
   it("CPCL", () => {
-    expect(() => b().toCPCL()).not.toThrow();
+    expect(() => cpcl.compile(b())).not.toThrow();
   });
   it("DPL", () => {
-    expect(() => b().toDPL()).not.toThrow();
+    expect(() => dpl.compile(b())).not.toThrow();
   });
   it("SBPL", () => {
-    expect(() => b().toSBPL()).not.toThrow();
+    expect(() => sbpl.compile(b())).not.toThrow();
   });
   it("IPL", () => {
-    expect(() => b().toIPL()).not.toThrow();
+    expect(() => ipl.compile(b())).not.toThrow();
   });
   it("ESC/POS", () => {
-    expect(() => b().toESCPOS()).not.toThrow();
+    expect(() => escpos.compile(b())).not.toThrow();
   });
   it("Star PRNT", () => {
-    expect(() => b().toStarPRNT()).not.toThrow();
+    expect(() => starprnt.compile(b())).not.toThrow();
   });
   it("Preview", () => {
-    expect(b().toPreview()).toContain("<ellipse");
+    expect(renderPreview(b().resolve())).toContain("<ellipse");
   });
 });

@@ -14,6 +14,15 @@ import {
   convert,
   validate,
   markup,
+  tsc,
+  zpl,
+  epl,
+  cpcl,
+  dpl,
+  sbpl,
+  ipl,
+  escpos,
+  starprnt,
   type LabelBuilder,
   type MonochromeBitmap,
   type ResolvedLabel,
@@ -259,19 +268,9 @@ function generateCodeSnippet(): string {
     );
   }
 
-  const langMap: Record<string, string> = {
-    escpos: "toESCPOS",
-    starprnt: "toStarPRNT",
-    zpl: "toZPL",
-    epl: "toEPL",
-    cpcl: "toCPCL",
-    dpl: "toDPL",
-    sbpl: "toSBPL",
-    ipl: "toIPL",
-    tsc: "toTSC",
-  };
-  const lang = langMap[currentLang] ?? "toTSC";
-  lines.push(`  .${lang}();`);
+  lines.unshift(`import { ${currentLang} } from "portakal";`);
+  lines.push(`;`);
+  lines.push(`const output = ${currentLang}.compile(cmd);`);
 
   return lines.join("\n");
 }
@@ -279,27 +278,26 @@ function generateCodeSnippet(): string {
 function generate(): void {
   try {
     const b = buildLabel();
-    $("#preview-container").innerHTML = b.toPreview();
+    $("#preview-container").innerHTML = tsc.preview(b);
 
+    const langModules: Record<string, { compile: (b: LabelBuilder) => any }> = {
+      tsc,
+      zpl,
+      epl,
+      cpcl,
+      dpl,
+      sbpl,
+      ipl,
+      escpos,
+      starprnt,
+    };
+    const mod = langModules[currentLang] ?? tsc;
+    const compiled = mod.compile(b);
     let output: string;
-    if (currentLang === "escpos") {
-      output = formatHex(b.toESCPOS());
-    } else if (currentLang === "starprnt") {
-      output = formatHex(b.toStarPRNT());
-    } else if (currentLang === "zpl") {
-      output = b.toZPL();
-    } else if (currentLang === "epl") {
-      output = b.toEPL();
-    } else if (currentLang === "cpcl") {
-      output = b.toCPCL();
-    } else if (currentLang === "dpl") {
-      output = b.toDPL();
-    } else if (currentLang === "sbpl") {
-      output = b.toSBPL();
-    } else if (currentLang === "ipl") {
-      output = b.toIPL();
+    if (currentLang === "escpos" || currentLang === "starprnt") {
+      output = formatHex(compiled);
     } else {
-      output = b.toTSC();
+      output = compiled;
     }
 
     const codeEl = $("#output-code") as HTMLTextAreaElement;
@@ -691,20 +689,27 @@ export function setupApp(): void {
       const resolved = b.resolve();
 
       // Preview
-      $("#m-preview").innerHTML = b.toPreview();
+      $("#m-preview").innerHTML = tsc.preview(b);
 
       // Compile
+      const mLangModules: Record<string, { compile: (b: LabelBuilder) => any }> = {
+        tsc,
+        zpl,
+        epl,
+        cpcl,
+        dpl,
+        sbpl,
+        ipl,
+        escpos,
+        starprnt,
+      };
+      const mMod = mLangModules[markupLang] ?? tsc;
+      const mCompiled = mMod.compile(b);
       let output: string;
-      if (markupLang === "escpos") {
-        output = formatHex(b.toESCPOS());
-      } else if (markupLang === "zpl") {
-        output = b.toZPL();
-      } else if (markupLang === "epl") {
-        output = b.toEPL();
-      } else if (markupLang === "cpcl") {
-        output = b.toCPCL();
+      if (markupLang === "escpos" || markupLang === "starprnt") {
+        output = formatHex(mCompiled);
       } else {
-        output = b.toTSC();
+        output = mCompiled;
       }
 
       $("#m-output").textContent = output;
@@ -861,44 +866,30 @@ function generateReceipt(): void {
     b.text(separator("=", w));
     if (footer) b.text(footer, { align: "center" });
 
+    const rLangModules: Record<string, { compile: (b: LabelBuilder) => any }> = {
+      tsc,
+      zpl,
+      epl,
+      cpcl,
+      dpl,
+      sbpl,
+      ipl,
+      escpos,
+      starprnt,
+    };
+    const rMod = rLangModules[rlang] ?? escpos;
+    const rCompiled = rMod.compile(b);
     let output: string;
-    if (rlang === "escpos") {
-      output = formatHex(b.toESCPOS());
-    } else if (rlang === "starprnt") {
-      output = formatHex(b.toStarPRNT());
-    } else if (rlang === "zpl") {
-      output = b.toZPL();
-    } else if (rlang === "epl") {
-      output = b.toEPL();
-    } else if (rlang === "cpcl") {
-      output = b.toCPCL();
-    } else if (rlang === "dpl") {
-      output = b.toDPL();
-    } else if (rlang === "sbpl") {
-      output = b.toSBPL();
-    } else if (rlang === "ipl") {
-      output = b.toIPL();
+    if (rlang === "escpos" || rlang === "starprnt") {
+      output = formatHex(rCompiled);
     } else {
-      output = b.toTSC();
+      output = rCompiled;
     }
 
     ($("#receipt-output") as HTMLTextAreaElement).value = output;
 
     // Code preview
-    const rLangMap: Record<string, string> = {
-      escpos: "toESCPOS",
-      starprnt: "toStarPRNT",
-      zpl: "toZPL",
-      epl: "toEPL",
-      cpcl: "toCPCL",
-      dpl: "toDPL",
-      sbpl: "toSBPL",
-      ipl: "toIPL",
-      tsc: "toTSC",
-    };
-    const langMethod = rLangMap[rlang] ?? "toESCPOS";
-
-    const code = `import { label, formatPair, separator } from "portakal";
+    const code = `import { label, formatPair, separator, ${rlang} } from "portakal";
 
 const w = ${w};
 const receipt = label({ width: 80, unit: "mm" })
@@ -907,8 +898,9 @@ const receipt = label({ width: 80, unit: "mm" })
 ${items.map((i) => `  .text(formatPair("${i.name} x${i.qty}", "$${Number.parseFloat(i.price).toFixed(2)}", w))`).join("\n")}
   .text(separator("-", w))
   .text(formatPair("TOTAL", "$${total.toFixed(2)}", w), { bold: true, size: 2 })
-  .text(separator("=", w))${footer ? `\n  .text("${footer}", { align: "center" })` : ""}
-  .${langMethod}();`;
+  .text(separator("=", w))${footer ? `\n  .text("${footer}", { align: "center" })` : ""};
+
+const output = ${rlang}.compile(receipt);`;
 
     $("#receipt-code").textContent = code;
   } catch {
