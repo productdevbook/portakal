@@ -7,6 +7,9 @@
     "dev": "vite dev",
     "preview": "vite preview"
   },
+  "dependencies": {
+    "etiket": "latest"
+  },
   "devDependencies": {
     "nitro": "latest",
     "vite": "latest"

@@ -38,6 +38,10 @@ importers:
         version: 4.1.2(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(jiti@2.6.1)(yaml@2.8.3))
 
   web:
+    dependencies:
+      etiket:
+        specifier: latest
+        version: 0.9.1
     devDependencies:
       nitro:
         specifier: latest

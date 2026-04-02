@@ -162,6 +162,90 @@
               </div>
             </div>
 
+            <!-- Barcode (via etiket) -->
+            <div class="ctrl-section">
+              <div class="ctrl-header" data-collapse="barcode">
+                <h3>
+                  <label class="check-label"
+                    ><input id="el-barcode-enable" type="checkbox" /> Barcode (etiket)</label
+                  >
+                </h3>
+                <span class="toggle">&#9654;</span>
+              </div>
+              <div class="ctrl-body collapsed" data-section="barcode">
+                <div class="field full">
+                  <label for="el-barcode-data">Data</label>
+                  <input id="el-barcode-data" type="text" value="123456789" spellcheck="false" />
+                </div>
+                <div class="field full">
+                  <label for="el-barcode-type">Type</label>
+                  <select id="el-barcode-type">
+                    <option value="code128" selected>Code 128</option>
+                    <option value="code39">Code 39</option>
+                    <option value="ean13">EAN-13</option>
+                    <option value="ean8">EAN-8</option>
+                    <option value="upca">UPC-A</option>
+                    <option value="itf14">ITF-14</option>
+                    <option value="codabar">Codabar</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="el-barcode-x">X</label
+                  ><input id="el-barcode-x" type="number" value="10" />
+                </div>
+                <div class="field">
+                  <label for="el-barcode-y">Y</label
+                  ><input id="el-barcode-y" type="number" value="70" />
+                </div>
+                <div class="field">
+                  <label for="el-barcode-w">Width</label
+                  ><input id="el-barcode-w" type="number" value="200" />
+                </div>
+              </div>
+            </div>
+
+            <!-- QR Code (via etiket) -->
+            <div class="ctrl-section">
+              <div class="ctrl-header" data-collapse="qr">
+                <h3>
+                  <label class="check-label"
+                    ><input id="el-qr-enable" type="checkbox" /> QR Code (etiket)</label
+                  >
+                </h3>
+                <span class="toggle">&#9654;</span>
+              </div>
+              <div class="ctrl-body collapsed" data-section="qr">
+                <div class="field full">
+                  <label for="el-qr-data">Data</label>
+                  <input
+                    id="el-qr-data"
+                    type="text"
+                    value="https://example.com"
+                    spellcheck="false"
+                  />
+                </div>
+                <div class="field">
+                  <label for="el-qr-ecc">ECC</label>
+                  <select id="el-qr-ecc">
+                    <option value="L">L</option>
+                    <option value="M" selected>M</option>
+                    <option value="Q">Q</option>
+                    <option value="H">H</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="el-qr-x">X</label><input id="el-qr-x" type="number" value="230" />
+                </div>
+                <div class="field">
+                  <label for="el-qr-y">Y</label><input id="el-qr-y" type="number" value="70" />
+                </div>
+                <div class="field">
+                  <label for="el-qr-size">Size</label
+                  ><input id="el-qr-size" type="number" value="80" />
+                </div>
+              </div>
+            </div>
+
             <!-- Shapes -->
             <div class="ctrl-section">
               <div class="ctrl-header" data-collapse="shapes">
@@ -260,6 +344,29 @@
               </div>
               <div id="output-error" class="error" hidden></div>
               <pre id="output-code" class="output-code"></pre>
+            </div>
+
+            <!-- Code Preview -->
+            <div class="code-section">
+              <div class="output-header">
+                <h3
+                  style="
+                    font-size: 0.65rem;
+                    color: var(--text-dim);
+                    text-transform: uppercase;
+                    letter-spacing: 0.08em;
+                    font-weight: 700;
+                  "
+                >
+                  Code Preview
+                </h3>
+                <button id="btn-copy-code" class="btn">Copy</button>
+              </div>
+              <pre
+                id="code-preview"
+                class="output-code"
+                style="min-height: 80px; max-height: 200px; color: #a78bfa"
+              ></pre>
             </div>
           </div>
         </div>
