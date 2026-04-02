@@ -33,43 +33,36 @@ export class LabelBuilder {
     this.config = config;
   }
 
-  /** Add text element */
   text(content: string, options: TextOptions = {}): this {
     this.elements.push({ type: "text", content, options });
     return this;
   }
 
-  /** Add pre-processed monochrome image (use etiket for barcode/QR generation) */
   image(bitmap: MonochromeBitmap, options: ImageOptions = {}): this {
     this.elements.push({ type: "image", bitmap, options });
     return this;
   }
 
-  /** Add box/rectangle */
   box(options: BoxOptions): this {
     this.elements.push({ type: "box", options });
     return this;
   }
 
-  /** Add line */
   line(options: LineOptions): this {
     this.elements.push({ type: "line", options });
     return this;
   }
 
-  /** Add circle */
   circle(options: CircleOptions): this {
     this.elements.push({ type: "circle", options });
     return this;
   }
 
-  /** Add raw printer-specific command (escape hatch) */
   raw(content: string | Uint8Array): this {
     this.elements.push({ type: "raw", content });
     return this;
   }
 
-  /** Resolve config + elements into a ResolvedLabel */
   resolve(): ResolvedLabel {
     const unit = this.config.unit ?? "mm";
     const dpi = this.config.dpi ?? 203;
@@ -87,52 +80,42 @@ export class LabelBuilder {
     };
   }
 
-  /** Compile to TSC/TSPL2 command string */
   toTSC(): string {
     return compileToTSC(this.resolve());
   }
 
-  /** Compile to Zebra ZPL II command string */
   toZPL(): string {
     return compileToZPL(this.resolve());
   }
 
-  /** Compile to EPL2 command string */
   toEPL(): string {
     return compileToEPL(this.resolve());
   }
 
-  /** Compile to ESC/POS byte sequence */
   toESCPOS(): Uint8Array {
     return compileToESCPOS(this.resolve());
   }
 
-  /** Compile to CPCL command string (Zebra mobile printers) */
   toCPCL(): string {
     return compileToCPCL(this.resolve());
   }
 
-  /** Compile to DPL command string (Honeywell/Datamax printers) */
   toDPL(): string {
     return compileToDPL(this.resolve());
   }
 
-  /** Compile to SBPL command string (SATO printers) */
   toSBPL(): string {
     return compileToSBPL(this.resolve());
   }
 
-  /** Compile to Star PRNT byte sequence (Star Micronics printers) */
   toStarPRNT(): Uint8Array {
     return compileToStarPRNT(this.resolve());
   }
 
-  /** Compile to IPL command string (Intermec/Honeywell printers) */
   toIPL(): string {
     return compileToIPL(this.resolve());
   }
 
-  /** Render as SVG preview (for development/testing without a physical printer) */
   toPreview(): string {
     return renderPreview(this.resolve());
   }

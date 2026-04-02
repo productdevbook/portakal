@@ -44,6 +44,66 @@
     ".": {
       "types": "./dist/index.d.mts",
       "default": "./dist/index.mjs"
+    },
+    "./tsc": {
+      "types": "./dist/languages/tsc.d.mts",
+      "default": "./dist/languages/tsc.mjs"
+    },
+    "./zpl": {
+      "types": "./dist/languages/zpl.d.mts",
+      "default": "./dist/languages/zpl.mjs"
+    },
+    "./epl": {
+      "types": "./dist/languages/epl.d.mts",
+      "default": "./dist/languages/epl.mjs"
+    },
+    "./escpos": {
+      "types": "./dist/languages/escpos.d.mts",
+      "default": "./dist/languages/escpos.mjs"
+    },
+    "./cpcl": {
+      "types": "./dist/languages/cpcl.d.mts",
+      "default": "./dist/languages/cpcl.mjs"
+    },
+    "./dpl": {
+      "types": "./dist/languages/dpl.d.mts",
+      "default": "./dist/languages/dpl.mjs"
+    },
+    "./sbpl": {
+      "types": "./dist/languages/sbpl.d.mts",
+      "default": "./dist/languages/sbpl.mjs"
+    },
+    "./starprnt": {
+      "types": "./dist/languages/starprnt.d.mts",
+      "default": "./dist/languages/starprnt.mjs"
+    },
+    "./ipl": {
+      "types": "./dist/languages/ipl.d.mts",
+      "default": "./dist/languages/ipl.mjs"
+    },
+    "./image": {
+      "types": "./dist/image.d.mts",
+      "default": "./dist/image.mjs"
+    },
+    "./receipt": {
+      "types": "./dist/receipt.d.mts",
+      "default": "./dist/receipt.mjs"
+    },
+    "./encoding": {
+      "types": "./dist/encoding.d.mts",
+      "default": "./dist/encoding.mjs"
+    },
+    "./profiles": {
+      "types": "./dist/profiles.d.mts",
+      "default": "./dist/profiles.mjs"
+    },
+    "./transport": {
+      "types": "./dist/transport.d.mts",
+      "default": "./dist/transport.mjs"
+    },
+    "./preview": {
+      "types": "./dist/preview.d.mts",
+      "default": "./dist/preview.mjs"
     }
   },
   "scripts": {
