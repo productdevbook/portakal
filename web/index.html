@@ -35,222 +35,212 @@
       <section class="panel active" data-panel="label">
         <div class="split">
           <div class="controls">
-            <h3
-              style="
-                grid-column: 1/-1;
-                color: var(--text-dim);
-                font-size: 0.75rem;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-              "
-            >
-              Label Setup
-            </h3>
-            <div class="field">
-              <label for="lbl-width">Width (mm)</label>
-              <input id="lbl-width" type="number" value="40" min="1" />
-            </div>
-            <div class="field">
-              <label for="lbl-height">Height (mm)</label>
-              <input id="lbl-height" type="number" value="30" min="1" />
-            </div>
-            <div class="field">
-              <label for="lbl-dpi">DPI</label>
-              <select id="lbl-dpi">
-                <option value="203" selected>203</option>
-                <option value="300">300</option>
-                <option value="600">600</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="lbl-gap">Gap (mm)</label>
-              <input id="lbl-gap" type="number" value="3" min="0" />
-            </div>
-            <div class="field">
-              <label for="lbl-speed">Speed</label>
-              <input id="lbl-speed" type="number" value="4" min="1" max="10" />
-            </div>
-            <div class="field">
-              <label for="lbl-density">Density</label>
-              <input id="lbl-density" type="number" value="8" min="0" max="15" />
-            </div>
-            <div class="field">
-              <label for="lbl-copies">Copies</label>
-              <input id="lbl-copies" type="number" value="1" min="1" />
+            <!-- Label Setup -->
+            <div class="ctrl-section">
+              <div class="ctrl-header" data-collapse="setup">
+                <h3>Label Setup</h3>
+                <span class="toggle">&#9660;</span>
+              </div>
+              <div class="ctrl-body" data-section="setup">
+                <div class="field">
+                  <label for="lbl-width">Width (mm)</label>
+                  <input id="lbl-width" type="number" value="40" min="1" />
+                </div>
+                <div class="field">
+                  <label for="lbl-height">Height (mm)</label>
+                  <input id="lbl-height" type="number" value="30" min="1" />
+                </div>
+                <div class="field">
+                  <label for="lbl-dpi">DPI</label>
+                  <select id="lbl-dpi">
+                    <option value="203" selected>203</option>
+                    <option value="300">300</option>
+                    <option value="600">600</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="lbl-gap">Gap (mm)</label>
+                  <input id="lbl-gap" type="number" value="3" min="0" />
+                </div>
+                <div class="field">
+                  <label for="lbl-speed">Speed</label>
+                  <input id="lbl-speed" type="number" value="4" min="1" max="10" />
+                </div>
+                <div class="field">
+                  <label for="lbl-density">Density</label>
+                  <input id="lbl-density" type="number" value="8" min="0" max="15" />
+                </div>
+                <div class="field">
+                  <label for="lbl-copies">Copies</label>
+                  <input id="lbl-copies" type="number" value="1" min="1" />
+                </div>
+              </div>
             </div>
 
-            <h3
-              style="
-                grid-column: 1/-1;
-                color: var(--text-dim);
-                font-size: 0.75rem;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                margin-top: 0.5rem;
-              "
-            >
-              Text
-            </h3>
-            <div class="field full">
-              <label for="el-text">Content</label>
-              <input id="el-text" type="text" value="Hello World" spellcheck="false" />
-            </div>
-            <div class="field">
-              <label for="el-text-x">X</label>
-              <input id="el-text-x" type="number" value="10" />
-            </div>
-            <div class="field">
-              <label for="el-text-y">Y</label>
-              <input id="el-text-y" type="number" value="10" />
-            </div>
-            <div class="field">
-              <label for="el-text-size">Size</label>
-              <input id="el-text-size" type="number" value="2" min="1" max="10" />
+            <!-- Text -->
+            <div class="ctrl-section">
+              <div class="ctrl-header" data-collapse="text">
+                <h3>Text</h3>
+                <span class="toggle">&#9660;</span>
+              </div>
+              <div class="ctrl-body" data-section="text">
+                <div class="field full">
+                  <label for="el-text">Content</label>
+                  <input id="el-text" type="text" value="Hello World" spellcheck="false" />
+                </div>
+                <div class="field">
+                  <label for="el-text-x">X</label>
+                  <input id="el-text-x" type="number" value="10" />
+                </div>
+                <div class="field">
+                  <label for="el-text-y">Y</label>
+                  <input id="el-text-y" type="number" value="10" />
+                </div>
+                <div class="field">
+                  <label for="el-text-size">Size</label>
+                  <input id="el-text-size" type="number" value="2" min="1" max="10" />
+                </div>
+              </div>
             </div>
 
-            <h3
-              style="
-                grid-column: 1/-1;
-                color: var(--text-dim);
-                font-size: 0.75rem;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                margin-top: 0.5rem;
-              "
-            >
-              Barcode
-            </h3>
-            <div class="field full">
-              <label for="el-barcode">Data</label>
-              <input id="el-barcode" type="text" value="123456789" spellcheck="false" />
-            </div>
-            <div class="field full">
-              <label for="el-barcode-type">Type</label>
-              <select id="el-barcode-type">
-                <option value="code128" selected>Code 128</option>
-                <option value="code39">Code 39</option>
-                <option value="ean13">EAN-13</option>
-                <option value="ean8">EAN-8</option>
-                <option value="upca">UPC-A</option>
-                <option value="upce">UPC-E</option>
-                <option value="itf">ITF</option>
-                <option value="codabar">Codabar</option>
-                <option value="code93">Code 93</option>
-                <option value="gs1_128">GS1-128</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="el-barcode-x">X</label>
-              <input id="el-barcode-x" type="number" value="10" />
-            </div>
-            <div class="field">
-              <label for="el-barcode-y">Y</label>
-              <input id="el-barcode-y" type="number" value="50" />
-            </div>
-            <div class="field">
-              <label for="el-barcode-h">Height</label>
-              <input id="el-barcode-h" type="number" value="60" />
+            <!-- Barcode -->
+            <div class="ctrl-section">
+              <div class="ctrl-header" data-collapse="barcode">
+                <h3>Barcode</h3>
+                <span class="toggle">&#9660;</span>
+              </div>
+              <div class="ctrl-body" data-section="barcode">
+                <div class="field full">
+                  <label for="el-barcode">Data</label>
+                  <input id="el-barcode" type="text" value="123456789" spellcheck="false" />
+                </div>
+                <div class="field full">
+                  <label for="el-barcode-type">Type</label>
+                  <select id="el-barcode-type">
+                    <option value="code128" selected>Code 128</option>
+                    <option value="code39">Code 39</option>
+                    <option value="ean13">EAN-13</option>
+                    <option value="ean8">EAN-8</option>
+                    <option value="upca">UPC-A</option>
+                    <option value="upce">UPC-E</option>
+                    <option value="itf">ITF</option>
+                    <option value="codabar">Codabar</option>
+                    <option value="code93">Code 93</option>
+                    <option value="gs1_128">GS1-128</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="el-barcode-x">X</label>
+                  <input id="el-barcode-x" type="number" value="10" />
+                </div>
+                <div class="field">
+                  <label for="el-barcode-y">Y</label>
+                  <input id="el-barcode-y" type="number" value="50" />
+                </div>
+                <div class="field">
+                  <label for="el-barcode-h">Height</label>
+                  <input id="el-barcode-h" type="number" value="60" />
+                </div>
+              </div>
             </div>
 
-            <h3
-              style="
-                grid-column: 1/-1;
-                color: var(--text-dim);
-                font-size: 0.75rem;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                margin-top: 0.5rem;
-              "
-            >
-              QR Code
-            </h3>
-            <div class="field full">
-              <label for="el-qr">Data</label>
-              <input id="el-qr" type="text" value="https://example.com" spellcheck="false" />
-            </div>
-            <div class="field">
-              <label for="el-qr-x">X</label>
-              <input id="el-qr-x" type="number" value="220" />
-            </div>
-            <div class="field">
-              <label for="el-qr-y">Y</label>
-              <input id="el-qr-y" type="number" value="50" />
-            </div>
-            <div class="field">
-              <label for="el-qr-size">Size</label>
-              <input id="el-qr-size" type="number" value="6" min="1" max="10" />
-            </div>
-            <div class="field">
-              <label for="el-qr-ecc">ECC</label>
-              <select id="el-qr-ecc">
-                <option value="L">L (7%)</option>
-                <option value="M" selected>M (15%)</option>
-                <option value="Q">Q (25%)</option>
-                <option value="H">H (30%)</option>
-              </select>
+            <!-- QR Code -->
+            <div class="ctrl-section">
+              <div class="ctrl-header" data-collapse="qr">
+                <h3>QR Code</h3>
+                <span class="toggle">&#9660;</span>
+              </div>
+              <div class="ctrl-body" data-section="qr">
+                <div class="field full">
+                  <label for="el-qr">Data</label>
+                  <input id="el-qr" type="text" value="https://example.com" spellcheck="false" />
+                </div>
+                <div class="field">
+                  <label for="el-qr-x">X</label>
+                  <input id="el-qr-x" type="number" value="220" />
+                </div>
+                <div class="field">
+                  <label for="el-qr-y">Y</label>
+                  <input id="el-qr-y" type="number" value="50" />
+                </div>
+                <div class="field">
+                  <label for="el-qr-size">Size</label>
+                  <input id="el-qr-size" type="number" value="6" min="1" max="10" />
+                </div>
+                <div class="field">
+                  <label for="el-qr-ecc">ECC</label>
+                  <select id="el-qr-ecc">
+                    <option value="L">L (7%)</option>
+                    <option value="M" selected>M (15%)</option>
+                    <option value="Q">Q (25%)</option>
+                    <option value="H">H (30%)</option>
+                  </select>
+                </div>
+              </div>
             </div>
 
-            <h3
-              style="
-                grid-column: 1/-1;
-                color: var(--text-dim);
-                font-size: 0.75rem;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
-                margin-top: 0.5rem;
-              "
-            >
-              Shapes
-            </h3>
-            <div class="field full">
-              <label><input id="el-box-enable" type="checkbox" checked /> Box</label>
-            </div>
-            <div class="field">
-              <label for="el-box-x">X</label>
-              <input id="el-box-x" type="number" value="5" />
-            </div>
-            <div class="field">
-              <label for="el-box-y">Y</label>
-              <input id="el-box-y" type="number" value="5" />
-            </div>
-            <div class="field">
-              <label for="el-box-w">W</label>
-              <input id="el-box-w" type="number" value="310" />
-            </div>
-            <div class="field">
-              <label for="el-box-h">H</label>
-              <input id="el-box-h" type="number" value="230" />
-            </div>
-            <div class="field">
-              <label for="el-box-t">Thick</label>
-              <input id="el-box-t" type="number" value="2" min="1" />
-            </div>
-
-            <div class="field full">
-              <label><input id="el-line-enable" type="checkbox" checked /> Line</label>
-            </div>
-            <div class="field">
-              <label for="el-line-x1">X1</label>
-              <input id="el-line-x1" type="number" value="5" />
-            </div>
-            <div class="field">
-              <label for="el-line-y1">Y1</label>
-              <input id="el-line-y1" type="number" value="45" />
-            </div>
-            <div class="field">
-              <label for="el-line-x2">X2</label>
-              <input id="el-line-x2" type="number" value="315" />
-            </div>
-            <div class="field">
-              <label for="el-line-y2">Y2</label>
-              <input id="el-line-y2" type="number" value="45" />
-            </div>
-            <div class="field">
-              <label for="el-line-t">Thick</label>
-              <input id="el-line-t" type="number" value="1" min="1" />
+            <!-- Shapes -->
+            <div class="ctrl-section">
+              <div class="ctrl-header" data-collapse="shapes">
+                <h3>Shapes</h3>
+                <span class="toggle">&#9660;</span>
+              </div>
+              <div class="ctrl-body" data-section="shapes">
+                <div class="field full">
+                  <label class="check-label">
+                    <input id="el-box-enable" type="checkbox" checked /> Box
+                  </label>
+                </div>
+                <div class="field">
+                  <label for="el-box-x">X</label>
+                  <input id="el-box-x" type="number" value="5" />
+                </div>
+                <div class="field">
+                  <label for="el-box-y">Y</label>
+                  <input id="el-box-y" type="number" value="5" />
+                </div>
+                <div class="field">
+                  <label for="el-box-w">W</label>
+                  <input id="el-box-w" type="number" value="310" />
+                </div>
+                <div class="field">
+                  <label for="el-box-h">H</label>
+                  <input id="el-box-h" type="number" value="230" />
+                </div>
+                <div class="field">
+                  <label for="el-box-t">Thick</label>
+                  <input id="el-box-t" type="number" value="2" min="1" />
+                </div>
+                <div class="field full" style="margin-top: 0.25rem">
+                  <label class="check-label">
+                    <input id="el-line-enable" type="checkbox" checked /> Line
+                  </label>
+                </div>
+                <div class="field">
+                  <label for="el-line-x1">X1</label>
+                  <input id="el-line-x1" type="number" value="5" />
+                </div>
+                <div class="field">
+                  <label for="el-line-y1">Y1</label>
+                  <input id="el-line-y1" type="number" value="45" />
+                </div>
+                <div class="field">
+                  <label for="el-line-x2">X2</label>
+                  <input id="el-line-x2" type="number" value="315" />
+                </div>
+                <div class="field">
+                  <label for="el-line-y2">Y2</label>
+                  <input id="el-line-y2" type="number" value="45" />
+                </div>
+                <div class="field">
+                  <label for="el-line-t">Thick</label>
+                  <input id="el-line-t" type="number" value="1" min="1" />
+                </div>
+              </div>
             </div>
           </div>
 
+          <!-- Output -->
           <div class="output">
             <div class="output-header">
               <div class="lang-tabs">
@@ -259,7 +249,7 @@
                 <button class="lang-tab" data-lang="epl">EPL</button>
                 <button class="lang-tab" data-lang="escpos">ESC/POS</button>
               </div>
-              <button id="btn-copy" class="btn btn-copy">Copy</button>
+              <button id="btn-copy" class="btn">Copy</button>
             </div>
             <div id="output-error" class="error" hidden></div>
             <pre id="output-code" class="output-code"></pre>
@@ -270,7 +260,7 @@
       <!-- ═══════ RECEIPT ═══════ -->
       <section class="panel" data-panel="receipt">
         <p style="color: var(--text-dim); text-align: center; padding: 3rem">
-          Receipt designer coming soon — use the Label tab for now.
+          Receipt designer coming soon.
         </p>
       </section>
     </main>

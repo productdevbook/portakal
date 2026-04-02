@@ -18,26 +18,17 @@ let currentLang: "tsc" | "zpl" | "epl" | "escpos" = "tsc";
 
 function generate(): void {
   try {
-    const w = num("#lbl-width") || 40;
-    const h = num("#lbl-height") || 30;
-    const dpi = num("#lbl-dpi") || 203;
-    const gap = num("#lbl-gap") || 3;
-    const speed = num("#lbl-speed") || 4;
-    const density = num("#lbl-density") || 8;
-    const copies = num("#lbl-copies") || 1;
-
     const b = label({
-      width: w,
-      height: h,
+      width: num("#lbl-width") || 40,
+      height: num("#lbl-height") || 30,
       unit: "mm",
-      dpi,
-      gap,
-      speed,
-      density,
-      copies,
+      dpi: num("#lbl-dpi") || 203,
+      gap: num("#lbl-gap") || 3,
+      speed: num("#lbl-speed") || 4,
+      density: num("#lbl-density") || 8,
+      copies: num("#lbl-copies") || 1,
     });
 
-    // Text elements
     const textContent = val("#el-text");
     if (textContent) {
       b.text(textContent, {
@@ -47,19 +38,16 @@ function generate(): void {
       });
     }
 
-    // Barcode
     const bcData = val("#el-barcode");
     if (bcData) {
-      const bcType = val("#el-barcode-type") as any;
       b.barcode(bcData, {
-        type: bcType,
+        type: val("#el-barcode-type") as any,
         x: num("#el-barcode-x"),
         y: num("#el-barcode-y"),
         height: num("#el-barcode-h") || 60,
       });
     }
 
-    // QR Code
     const qrData = val("#el-qr");
     if (qrData) {
       b.qrcode(qrData, {
@@ -70,7 +58,6 @@ function generate(): void {
       });
     }
 
-    // Box
     if (($("#el-box-enable") as HTMLInputElement).checked) {
       b.box({
         x: num("#el-box-x"),
@@ -81,7 +68,6 @@ function generate(): void {
       });
     }
 
-    // Line
     if (($("#el-line-enable") as HTMLInputElement).checked) {
       b.line({
         x1: num("#el-line-x1"),
@@ -94,8 +80,7 @@ function generate(): void {
 
     let output: string;
     if (currentLang === "escpos") {
-      const bytes = b.toESCPOS();
-      output = formatHex(bytes);
+      output = formatHex(b.toESCPOS());
     } else if (currentLang === "zpl") {
       output = b.toZPL();
     } else if (currentLang === "epl") {
@@ -134,8 +119,7 @@ export function setupApp(): void {
       $$(".tab").forEach((t) => t.classList.remove("active"));
       $$(".panel").forEach((p) => p.classList.remove("active"));
       tab.classList.add("active");
-      const panel = tab.dataset.tab!;
-      $(`[data-panel="${panel}"]`).classList.add("active");
+      $(`[data-panel="${tab.dataset.tab}"]`).classList.add("active");
     });
   }
 
@@ -149,6 +133,17 @@ export function setupApp(): void {
     });
   }
 
+  // Collapsible sections
+  for (const header of $$(".ctrl-header")) {
+    header.addEventListener("click", () => {
+      const name = header.dataset.collapse!;
+      const body = $(`[data-section="${name}"]`);
+      const toggle = header.querySelector(".toggle") as HTMLElement;
+      body.classList.toggle("collapsed");
+      toggle.textContent = body.classList.contains("collapsed") ? "\u25B6" : "\u25BC";
+    });
+  }
+
   // Copy button
   $("#btn-copy").addEventListener("click", () => {
     const text = $("#output-code").textContent ?? "";
@@ -159,11 +154,10 @@ export function setupApp(): void {
   });
 
   // Bind all inputs
-  for (const input of $$("input, select, textarea")) {
+  for (const input of $$("input, select")) {
     input.addEventListener("input", generate);
     input.addEventListener("change", generate);
   }
 
-  // Initial render
   generate();
 }
