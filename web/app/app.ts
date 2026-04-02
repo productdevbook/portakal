@@ -4,6 +4,7 @@ import {
   separator,
   renderPreview,
   parseTSC,
+  parseZPL,
   type LabelBuilder,
   type MonochromeBitmap,
   type ResolvedLabel,
@@ -416,7 +417,16 @@ export function setupApp(): void {
   $("#output-code").addEventListener("input", () => {
     const code = ($("#output-code") as HTMLTextAreaElement).value;
     try {
-      const parsed = parseTSC(code);
+      let parsed: { widthDots: number; heightDots: number; elements: any[] };
+
+      if (currentLang === "zpl") {
+        const r = parseZPL(code);
+        parsed = { widthDots: r.widthDots, heightDots: r.heightDots, elements: r.elements };
+      } else {
+        // TSC parser as default (works for TSC, and basic text extraction for others)
+        parsed = parseTSC(code);
+      }
+
       const resolved: ResolvedLabel = {
         widthDots: parsed.widthDots,
         heightDots: parsed.heightDots,
