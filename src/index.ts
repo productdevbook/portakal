@@ -1,10 +1,5 @@
 export { label, LabelBuilder } from "./builder";
-export {
-  PortakalError,
-  InvalidConfigError,
-  InvalidBarcodeError,
-  UnsupportedFeatureError,
-} from "./errors";
+export { PortakalError, InvalidConfigError, UnsupportedFeatureError } from "./errors";
 export { toDots } from "./utils";
 export { compileToTSC } from "./languages/tsc";
 export { compileToZPL } from "./languages/zpl";
@@ -14,8 +9,6 @@ export { renderPreview } from "./preview";
 
 export type {
   Alignment,
-  BarcodeOptions,
-  BarcodeType,
   BoxOptions,
   CircleOptions,
   DitherAlgorithm,
@@ -24,9 +17,6 @@ export type {
   LabelElement,
   LineOptions,
   MonochromeBitmap,
-  QREcc,
-  QRModel,
-  QROptions,
   ResolvedLabel,
   Rotation,
   TextOptions,

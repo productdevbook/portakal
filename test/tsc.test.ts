@@ -36,22 +36,6 @@ describe("TSC/TSPL2 compiler", () => {
     expect(output).toContain('TEXT 10,20,"2",90,1,1,"Rotated"');
   });
 
-  it("generates BARCODE command", () => {
-    const output = label({ width: 40, height: 30 })
-      .barcode("123456789", { type: "code128", x: 10, y: 50, height: 60 })
-      .toTSC();
-
-    expect(output).toContain('BARCODE 10,50,"128",60,1,0,2,4,"123456789"');
-  });
-
-  it("generates QRCODE command", () => {
-    const output = label({ width: 40, height: 30 })
-      .qrcode("https://example.com", { x: 10, y: 100, ecc: "H", size: 8 })
-      .toTSC();
-
-    expect(output).toContain('QRCODE 10,100,H,8,A,0,M2,S7,"https://example.com"');
-  });
-
   it("generates BOX command", () => {
     const output = label({ width: 40, height: 30 })
       .box({ x: 5, y: 5, width: 300, height: 200, thickness: 2 })
@@ -98,6 +82,18 @@ describe("TSC/TSPL2 compiler", () => {
       .toTSC();
 
     expect(output).toContain("CIRCLE 100,100,50,2");
+  });
+
+  it("generates BITMAP command for images", () => {
+    const bitmap = {
+      data: new Uint8Array([0xff, 0x00]),
+      width: 8,
+      height: 2,
+      bytesPerRow: 1,
+    };
+    const output = label({ width: 40, height: 30 }).image(bitmap, { x: 10, y: 10 }).toTSC();
+
+    expect(output).toContain("BITMAP 10,10,1,2,0,");
   });
 
   it("handles raw command passthrough", () => {

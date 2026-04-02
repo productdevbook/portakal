@@ -5,12 +5,12 @@ describe("EPL2 compiler", () => {
   it("generates basic label structure", () => {
     const output = label({ width: 40, height: 30 }).toEPL();
 
-    expect(output).toContain("N\n"); // Clear buffer
-    expect(output).toContain("q320\n"); // Width in dots
-    expect(output).toContain("Q240,"); // Height + gap
-    expect(output).toContain("S4\n"); // Speed
-    expect(output).toContain("D8\n"); // Density
-    expect(output).toContain("P1\n"); // Print 1 copy
+    expect(output).toContain("N\n");
+    expect(output).toContain("q320\n");
+    expect(output).toContain("Q240,");
+    expect(output).toContain("S4\n");
+    expect(output).toContain("D8\n");
+    expect(output).toContain("P1\n");
   });
 
   it("generates text command", () => {
@@ -27,38 +27,6 @@ describe("EPL2 compiler", () => {
       .toEPL();
 
     expect(output).toContain('A10,20,0,2,1,1,R,"Reverse"');
-  });
-
-  it("generates barcode command", () => {
-    const output = label({ width: 40, height: 30 })
-      .barcode("12345", { type: "code128", x: 10, y: 50, height: 60 })
-      .toEPL();
-
-    expect(output).toContain('B10,50,0,0,2,4,60,B,"12345"');
-  });
-
-  it("generates Code 39 barcode", () => {
-    const output = label({ width: 40, height: 30 })
-      .barcode("ABC123", { type: "code39", x: 10, y: 50, height: 80 })
-      .toEPL();
-
-    expect(output).toContain("B10,50,0,3,");
-  });
-
-  it("generates EAN-13 barcode", () => {
-    const output = label({ width: 40, height: 30 })
-      .barcode("4006381333931", { type: "ean13", x: 10, y: 50 })
-      .toEPL();
-
-    expect(output).toContain(",E30,");
-  });
-
-  it("generates QR code via b command", () => {
-    const output = label({ width: 40, height: 30 })
-      .qrcode("https://example.com", { x: 10, y: 100 })
-      .toEPL();
-
-    expect(output).toContain('b10,100,0,Q,2,6,"https://example.com"');
   });
 
   it("generates box command", () => {

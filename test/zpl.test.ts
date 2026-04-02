@@ -7,10 +7,10 @@ describe("ZPL II compiler", () => {
 
     expect(output).toContain("^XA");
     expect(output).toContain("^XZ");
-    expect(output).toContain("^PW320"); // 40mm at 203 DPI
-    expect(output).toContain("^LL240"); // 30mm at 203 DPI
-    expect(output).toContain("^CI28"); // UTF-8
-    expect(output).toContain("^PQ1"); // 1 copy
+    expect(output).toContain("^PW320");
+    expect(output).toContain("^LL240");
+    expect(output).toContain("^CI28");
+    expect(output).toContain("^PQ1");
   });
 
   it("generates text field", () => {
@@ -19,7 +19,7 @@ describe("ZPL II compiler", () => {
       .toZPL();
 
     expect(output).toContain("^FO50,50");
-    expect(output).toContain("^A0N,60,60"); // size 2 * 30
+    expect(output).toContain("^A0N,60,60");
     expect(output).toContain("^FDHello ZPL^FS");
   });
 
@@ -37,41 +37,6 @@ describe("ZPL II compiler", () => {
       .toZPL();
 
     expect(output).toContain("^FR");
-  });
-
-  it("generates Code 128 barcode", () => {
-    const output = label({ width: 40, height: 30 })
-      .barcode("123456", { type: "code128", x: 10, y: 50, height: 100 })
-      .toZPL();
-
-    expect(output).toContain("^FO10,50");
-    expect(output).toContain("^BCN,100,Y");
-    expect(output).toContain("^FD123456^FS");
-  });
-
-  it("generates QR code", () => {
-    const output = label({ width: 40, height: 30 })
-      .qrcode("https://example.com", { x: 10, y: 10, ecc: "H", size: 5 })
-      .toZPL();
-
-    expect(output).toContain("^FO10,10");
-    expect(output).toContain("^BQN,2,5");
-    expect(output).toContain("^FDQH,https://example.com^FS");
-  });
-
-  it("generates QR code with different ECC levels", () => {
-    expect(label({ width: 40, height: 30 }).qrcode("test", { ecc: "L" }).toZPL()).toContain(
-      "^FDQL,test^FS",
-    );
-    expect(label({ width: 40, height: 30 }).qrcode("test", { ecc: "M" }).toZPL()).toContain(
-      "^FDQM,test^FS",
-    );
-    expect(label({ width: 40, height: 30 }).qrcode("test", { ecc: "Q" }).toZPL()).toContain(
-      "^FDQQ,test^FS",
-    );
-    expect(label({ width: 40, height: 30 }).qrcode("test", { ecc: "H" }).toZPL()).toContain(
-      "^FDQH,test^FS",
-    );
   });
 
   it("generates box", () => {

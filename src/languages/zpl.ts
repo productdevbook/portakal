@@ -1,31 +1,5 @@
 import type { LabelElement, ResolvedLabel } from "../types";
 
-function zplBarcodeCommand(type: string): string {
-  const map: Record<string, string> = {
-    code128: "^BC",
-    code128a: "^BC",
-    code128b: "^BC",
-    code128c: "^BC",
-    code39: "^B3",
-    code93: "^BA",
-    ean13: "^BE",
-    ean8: "^B8",
-    upca: "^BU",
-    upce: "^B9",
-    itf: "^B2",
-    itf14: "^B2",
-    codabar: "^BK",
-    msi: "^BM",
-    plessey: "^BP",
-    code11: "^B1",
-    postnet: "^BZ",
-    planet: "^B5",
-    gs1_128: "^BC",
-    gs1_databar: "^BR",
-  };
-  return map[type] ?? "^BC";
-}
-
 function zplRotation(r: number): string {
   switch (r) {
     case 90:
@@ -55,7 +29,7 @@ function compileElement(el: LabelElement): string {
 
       if (o.maxWidth) {
         const justify = o.align === "center" ? "C" : o.align === "right" ? "R" : "L";
-        const lines = Math.ceil(h / 30) + 5; // rough estimate
+        const lines = Math.ceil(h / 30) + 5;
         cmd += `^FB${o.maxWidth},${lines},0,${justify}`;
       }
 
@@ -67,39 +41,6 @@ function compileElement(el: LabelElement): string {
       return cmd;
     }
 
-    case "barcode": {
-      const o = el.options;
-      const x = o.x ?? 0;
-      const y = o.y ?? 0;
-      const rot = zplRotation(o.rotation ?? 0);
-      const height = o.height ?? 80;
-      const readable = o.readable !== false ? "Y" : "N";
-      const barcodeCmd = zplBarcodeCommand(o.type);
-
-      let cmd = `^FO${x},${y}`;
-      if (o.narrowWidth) {
-        cmd += `^BY${o.narrowWidth}`;
-      }
-      cmd += `${barcodeCmd}${rot},${height},${readable}`;
-      cmd += `^FD${el.data}^FS`;
-      return cmd;
-    }
-
-    case "qrcode": {
-      const o = el.options;
-      const x = o.x ?? 0;
-      const y = o.y ?? 0;
-      const model = o.model ?? 2;
-      const size = o.size ?? 5;
-      const ecc = o.ecc ?? "M";
-      const eccPrefix = ecc === "L" ? "QL" : ecc === "Q" ? "QQ" : ecc === "H" ? "QH" : "QM";
-
-      let cmd = `^FO${x},${y}`;
-      cmd += `^BQN,${model},${size}`;
-      cmd += `^FD${eccPrefix},${el.data}^FS`;
-      return cmd;
-    }
-
     case "image": {
       const o = el.options;
       const x = o.x ?? 0;
@@ -107,7 +48,6 @@ function compileElement(el: LabelElement): string {
       const bmp = el.bitmap;
       const totalBytes = bmp.data.length;
 
-      // ASCII hex encoding (simplest, widest compatibility)
       let hex = "";
       for (let i = 0; i < bmp.data.length; i++) {
         hex += bmp.data[i].toString(16).padStart(2, "0").toUpperCase();
@@ -134,7 +74,6 @@ function compileElement(el: LabelElement): string {
         const h = Math.abs(o.y2 - o.y1);
         return `^FO${o.x1},${Math.min(o.y1, o.y2)}^GB${t},${h},${t}^FS`;
       }
-      // ZPL ^GD for diagonal
       const w = Math.abs(o.x2 - o.x1);
       const h = Math.abs(o.y2 - o.y1);
       const dir = o.x2 > o.x1 === o.y2 > o.y1 ? "R" : "L";
@@ -162,8 +101,8 @@ export function compileToZPL(label: ResolvedLabel): string {
     lines.push(`^LL${label.heightDots}`);
   }
   lines.push(`^PR${label.speed}`);
-  lines.push(`~SD${label.density * 2}`); // ZPL darkness 0-30, TSPL 0-15
-  lines.push("^CI28"); // UTF-8 mode
+  lines.push(`~SD${label.density * 2}`);
+  lines.push("^CI28");
 
   for (const el of label.elements) {
     lines.push(compileElement(el));

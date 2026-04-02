@@ -19,8 +19,6 @@ describe("LabelBuilder", () => {
     const builder = label({ width: 40, height: 30 });
     const result = builder
       .text("Hello")
-      .barcode("123", { type: "code128" })
-      .qrcode("test")
       .box({ x: 0, y: 0, width: 100, height: 100 })
       .line({ x1: 0, y1: 0, x2: 100, y2: 100 })
       .raw("CUSTOM");
@@ -35,8 +33,8 @@ describe("LabelBuilder", () => {
     expect(resolved.density).toBe(8);
     expect(resolved.direction).toBe(0);
     expect(resolved.copies).toBe(1);
-    expect(resolved.widthDots).toBe(320); // 40mm at 203 DPI
-    expect(resolved.heightDots).toBe(240); // 30mm at 203 DPI
+    expect(resolved.widthDots).toBe(320);
+    expect(resolved.heightDots).toBe(240);
   });
 
   it("resolves with custom config", () => {
@@ -64,15 +62,10 @@ describe("LabelBuilder", () => {
   });
 
   it("collects elements in order", () => {
-    const resolved = label({ width: 40, height: 30 })
-      .text("First")
-      .barcode("123", { type: "code128" })
-      .text("Last")
-      .resolve();
+    const resolved = label({ width: 40, height: 30 }).text("First").text("Last").resolve();
 
-    expect(resolved.elements).toHaveLength(3);
+    expect(resolved.elements).toHaveLength(2);
     expect(resolved.elements[0].type).toBe("text");
-    expect(resolved.elements[1].type).toBe("barcode");
-    expect(resolved.elements[2].type).toBe("text");
+    expect(resolved.elements[1].type).toBe("text");
   });
 });

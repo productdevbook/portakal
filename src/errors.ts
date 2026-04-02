@@ -14,14 +14,6 @@ export class InvalidConfigError extends PortakalError {
   }
 }
 
-/** Thrown when barcode data is invalid for the given symbology */
-export class InvalidBarcodeError extends PortakalError {
-  constructor(message: string) {
-    super(message);
-    this.name = "InvalidBarcodeError";
-  }
-}
-
 /** Thrown when an unsupported feature is used for a target language */
 export class UnsupportedFeatureError extends PortakalError {
   constructor(language: string, feature: string) {

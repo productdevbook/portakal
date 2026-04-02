@@ -7,35 +7,6 @@ export type Rotation = 0 | 90 | 180 | 270;
 /** Text alignment */
 export type Alignment = "left" | "center" | "right";
 
-/** Barcode symbology types supported across printer languages */
-export type BarcodeType =
-  | "code128"
-  | "code128a"
-  | "code128b"
-  | "code128c"
-  | "code39"
-  | "code93"
-  | "ean13"
-  | "ean8"
-  | "upca"
-  | "upce"
-  | "itf"
-  | "itf14"
-  | "codabar"
-  | "msi"
-  | "plessey"
-  | "code11"
-  | "postnet"
-  | "planet"
-  | "gs1_128"
-  | "gs1_databar";
-
-/** QR Code error correction level */
-export type QREcc = "L" | "M" | "Q" | "H";
-
-/** QR Code model */
-export type QRModel = 1 | 2;
-
 /** Dithering algorithm for image processing */
 export type DitherAlgorithm = "threshold" | "floyd-steinberg" | "atkinson" | "ordered";
 
@@ -89,44 +60,6 @@ export interface TextOptions {
   maxWidth?: number;
   /** Line spacing (in dots) */
   lineSpacing?: number;
-}
-
-/** Barcode element options */
-export interface BarcodeOptions {
-  /** X position */
-  x?: number;
-  /** Y position */
-  y?: number;
-  /** Barcode symbology type */
-  type: BarcodeType;
-  /** Barcode height in dots */
-  height?: number;
-  /** Narrow bar width in dots */
-  narrowWidth?: number;
-  /** Wide bar width in dots */
-  wideWidth?: number;
-  /** Show human-readable interpretation */
-  readable?: boolean;
-  /** HRI position */
-  readablePosition?: "none" | "above" | "below" | "both";
-  /** Rotation */
-  rotation?: Rotation;
-}
-
-/** QR code element options */
-export interface QROptions {
-  /** X position */
-  x?: number;
-  /** Y position */
-  y?: number;
-  /** Error correction level (default: "M") */
-  ecc?: QREcc;
-  /** Module/cell size in dots (1-10) */
-  size?: number;
-  /** QR model (default: 2) */
-  model?: QRModel;
-  /** Rotation */
-  rotation?: Rotation;
 }
 
 /** Image element options */
@@ -202,8 +135,6 @@ export interface MonochromeBitmap {
 /** Internal label element union type */
 export type LabelElement =
   | { type: "text"; content: string; options: TextOptions }
-  | { type: "barcode"; data: string; options: BarcodeOptions }
-  | { type: "qrcode"; data: string; options: QROptions }
   | { type: "image"; bitmap: MonochromeBitmap; options: ImageOptions }
   | { type: "box"; options: BoxOptions }
   | { type: "line"; options: LineOptions }

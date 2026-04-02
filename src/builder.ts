@@ -1,5 +1,4 @@
 import type {
-  BarcodeOptions,
   BoxOptions,
   CircleOptions,
   ImageOptions,
@@ -7,7 +6,6 @@ import type {
   LabelElement,
   LineOptions,
   MonochromeBitmap,
-  QROptions,
   ResolvedLabel,
   TextOptions,
 } from "./types";
@@ -36,19 +34,7 @@ export class LabelBuilder {
     return this;
   }
 
-  /** Add 1D barcode element (printer-native) */
-  barcode(data: string, options: BarcodeOptions): this {
-    this.elements.push({ type: "barcode", data, options });
-    return this;
-  }
-
-  /** Add QR code element (printer-native) */
-  qrcode(data: string, options: QROptions = {}): this {
-    this.elements.push({ type: "qrcode", data, options });
-    return this;
-  }
-
-  /** Add pre-processed monochrome image */
+  /** Add pre-processed monochrome image (use etiket for barcode/QR generation) */
   image(bitmap: MonochromeBitmap, options: ImageOptions = {}): this {
     this.elements.push({ type: "image", bitmap, options });
     return this;

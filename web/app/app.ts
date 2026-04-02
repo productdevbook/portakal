@@ -47,21 +47,11 @@ function buildLabel(): LabelBuilder {
     });
   }
 
-  if (checked("#el-barcode-enable")) {
-    b.barcode(val("#el-barcode") || "123456789", {
-      type: val("#el-barcode-type") as any,
-      x: num("#el-barcode-x"),
-      y: num("#el-barcode-y"),
-      height: num("#el-barcode-h") || 60,
-    });
-  }
-
-  if (checked("#el-qr-enable")) {
-    b.qrcode(val("#el-qr") || "https://example.com", {
-      x: num("#el-qr-x"),
-      y: num("#el-qr-y"),
-      size: num("#el-qr-size") || 6,
-      ecc: (val("#el-qr-ecc") as any) || "M",
+  if (checked("#el-text3-enable")) {
+    b.text(val("#el-text3") || "", {
+      x: num("#el-text3-x"),
+      y: num("#el-text3-y"),
+      size: num("#el-text3-size") || 1,
     });
   }
 
@@ -82,6 +72,15 @@ function buildLabel(): LabelBuilder {
       x2: num("#el-line-x2") || 300,
       y2: num("#el-line-y2"),
       thickness: num("#el-line-t") || 1,
+    });
+  }
+
+  if (checked("#el-circle-enable")) {
+    b.circle({
+      x: num("#el-circle-x"),
+      y: num("#el-circle-y"),
+      diameter: num("#el-circle-d") || 50,
+      thickness: num("#el-circle-t") || 1,
     });
   }
 

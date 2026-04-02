@@ -6,7 +6,7 @@
     <title>portakal — Printer Language Playground</title>
     <meta
       name="description"
-      content="Universal printer language SDK — TSC, ZPL, EPL, ESC/POS. Design labels and receipts, see the output in real time."
+      content="Universal printer language SDK — design labels and receipts, see the output in real time."
     />
     <link
       rel="icon"
@@ -87,19 +87,17 @@
               <div class="ctrl-body" data-section="text">
                 <div class="field full">
                   <label for="el-text">Content</label>
-                  <input id="el-text" type="text" value="Hello World" spellcheck="false" />
+                  <input id="el-text" type="text" value="ACME Corp" spellcheck="false" />
                 </div>
                 <div class="field">
-                  <label for="el-text-x">X</label>
-                  <input id="el-text-x" type="number" value="10" />
+                  <label for="el-text-x">X</label><input id="el-text-x" type="number" value="10" />
                 </div>
                 <div class="field">
-                  <label for="el-text-y">Y</label>
-                  <input id="el-text-y" type="number" value="10" />
+                  <label for="el-text-y">Y</label><input id="el-text-y" type="number" value="10" />
                 </div>
                 <div class="field">
-                  <label for="el-text-size">Size</label>
-                  <input id="el-text-size" type="number" value="2" min="1" max="10" />
+                  <label for="el-text-size">Size</label
+                  ><input id="el-text-size" type="number" value="2" min="1" max="10" />
                 </div>
               </div>
             </div>
@@ -120,100 +118,46 @@
                   <input id="el-text2" type="text" value="SKU: PRD-00123" spellcheck="false" />
                 </div>
                 <div class="field">
-                  <label for="el-text2-x">X</label>
-                  <input id="el-text2-x" type="number" value="10" />
+                  <label for="el-text2-x">X</label
+                  ><input id="el-text2-x" type="number" value="10" />
                 </div>
                 <div class="field">
-                  <label for="el-text2-y">Y</label>
-                  <input id="el-text2-y" type="number" value="35" />
+                  <label for="el-text2-y">Y</label
+                  ><input id="el-text2-y" type="number" value="35" />
                 </div>
                 <div class="field">
-                  <label for="el-text2-size">Size</label>
-                  <input id="el-text2-size" type="number" value="1" min="1" max="10" />
+                  <label for="el-text2-size">Size</label
+                  ><input id="el-text2-size" type="number" value="1" min="1" max="10" />
                 </div>
               </div>
             </div>
 
-            <!-- Barcode -->
+            <!-- Text 3 -->
             <div class="ctrl-section">
-              <div class="ctrl-header" data-collapse="barcode">
+              <div class="ctrl-header" data-collapse="text3">
                 <h3>
                   <label class="check-label"
-                    ><input id="el-barcode-enable" type="checkbox" /> Barcode</label
+                    ><input id="el-text3-enable" type="checkbox" /> Text 3</label
                   >
                 </h3>
                 <span class="toggle">&#9654;</span>
               </div>
-              <div class="ctrl-body collapsed" data-section="barcode">
+              <div class="ctrl-body collapsed" data-section="text3">
                 <div class="field full">
-                  <label for="el-barcode">Data</label>
-                  <input id="el-barcode" type="text" value="123456789" spellcheck="false" />
-                </div>
-                <div class="field full">
-                  <label for="el-barcode-type">Type</label>
-                  <select id="el-barcode-type">
-                    <option value="code128" selected>Code 128</option>
-                    <option value="code39">Code 39</option>
-                    <option value="ean13">EAN-13</option>
-                    <option value="ean8">EAN-8</option>
-                    <option value="upca">UPC-A</option>
-                    <option value="upce">UPC-E</option>
-                    <option value="itf">ITF</option>
-                    <option value="codabar">Codabar</option>
-                    <option value="code93">Code 93</option>
-                    <option value="gs1_128">GS1-128</option>
-                  </select>
+                  <label for="el-text3">Content</label>
+                  <input id="el-text3" type="text" value="Made in Turkey" spellcheck="false" />
                 </div>
                 <div class="field">
-                  <label for="el-barcode-x">X</label>
-                  <input id="el-barcode-x" type="number" value="10" />
+                  <label for="el-text3-x">X</label
+                  ><input id="el-text3-x" type="number" value="10" />
                 </div>
                 <div class="field">
-                  <label for="el-barcode-y">Y</label>
-                  <input id="el-barcode-y" type="number" value="60" />
+                  <label for="el-text3-y">Y</label
+                  ><input id="el-text3-y" type="number" value="55" />
                 </div>
                 <div class="field">
-                  <label for="el-barcode-h">Height</label>
-                  <input id="el-barcode-h" type="number" value="60" />
-                </div>
-              </div>
-            </div>
-
-            <!-- QR Code -->
-            <div class="ctrl-section">
-              <div class="ctrl-header" data-collapse="qr">
-                <h3>
-                  <label class="check-label"
-                    ><input id="el-qr-enable" type="checkbox" /> QR Code</label
-                  >
-                </h3>
-                <span class="toggle">&#9654;</span>
-              </div>
-              <div class="ctrl-body collapsed" data-section="qr">
-                <div class="field full">
-                  <label for="el-qr">Data</label>
-                  <input id="el-qr" type="text" value="https://example.com" spellcheck="false" />
-                </div>
-                <div class="field">
-                  <label for="el-qr-x">X</label>
-                  <input id="el-qr-x" type="number" value="220" />
-                </div>
-                <div class="field">
-                  <label for="el-qr-y">Y</label>
-                  <input id="el-qr-y" type="number" value="50" />
-                </div>
-                <div class="field">
-                  <label for="el-qr-size">Size</label>
-                  <input id="el-qr-size" type="number" value="6" min="1" max="10" />
-                </div>
-                <div class="field">
-                  <label for="el-qr-ecc">ECC</label>
-                  <select id="el-qr-ecc">
-                    <option value="L">L (7%)</option>
-                    <option value="M" selected>M (15%)</option>
-                    <option value="Q">Q (25%)</option>
-                    <option value="H">H (30%)</option>
-                  </select>
+                  <label for="el-text3-size">Size</label
+                  ><input id="el-text3-size" type="number" value="1" min="1" max="10" />
                 </div>
               </div>
             </div>
@@ -231,49 +175,68 @@
                   >
                 </div>
                 <div class="field">
-                  <label for="el-box-x">X</label>
-                  <input id="el-box-x" type="number" value="5" />
+                  <label for="el-box-x">X</label><input id="el-box-x" type="number" value="5" />
                 </div>
                 <div class="field">
-                  <label for="el-box-y">Y</label>
-                  <input id="el-box-y" type="number" value="5" />
+                  <label for="el-box-y">Y</label><input id="el-box-y" type="number" value="5" />
                 </div>
                 <div class="field">
-                  <label for="el-box-w">W</label>
-                  <input id="el-box-w" type="number" value="310" />
+                  <label for="el-box-w">W</label><input id="el-box-w" type="number" value="310" />
                 </div>
                 <div class="field">
-                  <label for="el-box-h">H</label>
-                  <input id="el-box-h" type="number" value="230" />
+                  <label for="el-box-h">H</label><input id="el-box-h" type="number" value="230" />
                 </div>
                 <div class="field">
-                  <label for="el-box-t">Thick</label>
-                  <input id="el-box-t" type="number" value="2" min="1" />
+                  <label for="el-box-t">Thick</label
+                  ><input id="el-box-t" type="number" value="2" min="1" />
                 </div>
+
                 <div class="field full" style="margin-top: 0.25rem">
                   <label class="check-label"
                     ><input id="el-line-enable" type="checkbox" checked /> Line</label
                   >
                 </div>
                 <div class="field">
-                  <label for="el-line-x1">X1</label>
-                  <input id="el-line-x1" type="number" value="5" />
+                  <label for="el-line-x1">X1</label
+                  ><input id="el-line-x1" type="number" value="5" />
                 </div>
                 <div class="field">
-                  <label for="el-line-y1">Y1</label>
-                  <input id="el-line-y1" type="number" value="45" />
+                  <label for="el-line-y1">Y1</label
+                  ><input id="el-line-y1" type="number" value="55" />
                 </div>
                 <div class="field">
-                  <label for="el-line-x2">X2</label>
-                  <input id="el-line-x2" type="number" value="315" />
+                  <label for="el-line-x2">X2</label
+                  ><input id="el-line-x2" type="number" value="315" />
                 </div>
                 <div class="field">
-                  <label for="el-line-y2">Y2</label>
-                  <input id="el-line-y2" type="number" value="45" />
+                  <label for="el-line-y2">Y2</label
+                  ><input id="el-line-y2" type="number" value="55" />
                 </div>
                 <div class="field">
-                  <label for="el-line-t">Thick</label>
-                  <input id="el-line-t" type="number" value="1" min="1" />
+                  <label for="el-line-t">Thick</label
+                  ><input id="el-line-t" type="number" value="1" min="1" />
+                </div>
+
+                <div class="field full" style="margin-top: 0.25rem">
+                  <label class="check-label"
+                    ><input id="el-circle-enable" type="checkbox" /> Circle</label
+                  >
+                </div>
+                <div class="field">
+                  <label for="el-circle-x">X</label
+                  ><input id="el-circle-x" type="number" value="250" />
+                </div>
+                <div class="field">
+                  <label for="el-circle-y">Y</label
+                  ><input id="el-circle-y" type="number" value="150" />
+                </div>
+                <div class="field">
+                  <label for="el-circle-d">Diameter</label
+                  ><input id="el-circle-d" type="number" value="60" />
+                </div>
+                <div class="field">
+                  <label for="el-circle-t">Thick</label
+                  ><input id="el-circle-t" type="number" value="1" min="1" />
                 </div>
               </div>
             </div>
@@ -282,9 +245,7 @@
           <!-- Output -->
           <div class="output">
             <div class="preview-section">
-              <div class="preview-header">
-                <h3>Preview</h3>
-              </div>
+              <div class="preview-header"><h3>Preview</h3></div>
               <div id="preview-container" class="preview-canvas"></div>
             </div>
             <div class="code-section">
@@ -310,7 +271,6 @@
         </p>
       </section>
     </main>
-
     <script type="module" src="./app/entry-client.ts"></script>
   </body>
 </html>
