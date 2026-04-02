@@ -664,6 +664,62 @@ export function setupApp(): void {
     setTimeout(() => (btn.textContent = "Copy"), 1500);
   });
 
+  // Download helpers
+  function downloadSVG(containerId: string, filename: string): void {
+    const svg = $(`#${containerId}`).innerHTML;
+    if (!svg) return;
+    const blob = new Blob([svg], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function downloadPNG(containerId: string, filename: string): void {
+    const svgEl = $(`#${containerId}`).querySelector("svg");
+    if (!svgEl) return;
+    const svgData = new XMLSerializer().serializeToString(svgEl);
+    const canvas = document.createElement("canvas");
+    const w = svgEl.viewBox?.baseVal?.width || 800;
+    const h = svgEl.viewBox?.baseVal?.height || 600;
+    canvas.width = w * 2;
+    canvas.height = h * 2;
+    const ctx = canvas.getContext("2d")!;
+    ctx.scale(2, 2);
+    const img = new Image();
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+      }, "image/png");
+    };
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgData);
+  }
+
+  // Validate downloads
+  $("#v-download-svg").addEventListener("click", () =>
+    downloadSVG("v-preview", "label-preview.svg"),
+  );
+  $("#v-download-png").addEventListener("click", () =>
+    downloadPNG("v-preview", "label-preview.png"),
+  );
+
+  // Convert downloads
+  $("#c-download-svg").addEventListener("click", () =>
+    downloadSVG("c-preview-src", "label-preview.svg"),
+  );
+  $("#c-download-png").addEventListener("click", () =>
+    downloadPNG("c-preview-src", "label-preview.png"),
+  );
+
   // Load examples on first visit
   const vCode = $("#v-code") as HTMLTextAreaElement;
   if (!vCode.value && vCode.placeholder) vCode.value = vCode.placeholder;

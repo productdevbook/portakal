@@ -542,7 +542,11 @@ PRINT 1'
           <div class="validate-left">
             <div class="preview-section">
               <div class="preview-header"><h3>Preview</h3></div>
-              <div id="v-preview" class="preview-canvas"></div>
+              <div id="v-preview" class="preview-canvas" style="min-height: 250px"></div>
+              <div class="preview-toolbar">
+                <button class="btn" id="v-download-svg">SVG</button>
+                <button class="btn" id="v-download-png">PNG</button>
+              </div>
             </div>
           </div>
           <div class="validate-right">
@@ -627,7 +631,11 @@ PRINT 1'
           <div class="validate-left">
             <div class="preview-section">
               <div class="preview-header"><h3>Source Preview</h3></div>
-              <div id="c-preview-src" class="preview-canvas"></div>
+              <div id="c-preview-src" class="preview-canvas" style="min-height: 250px"></div>
+              <div class="preview-toolbar">
+                <button class="btn" id="c-download-svg">SVG</button>
+                <button class="btn" id="c-download-png">PNG</button>
+              </div>
             </div>
           </div>
           <div class="validate-right">
