@@ -21,6 +21,8 @@ export {
 } from "./image";
 export { formatRow, formatPair, formatTable, separator, wordWrap } from "./receipt";
 export type { Column } from "./receipt";
+export { encodeText, encodeTextForPrinter, isASCII, CODE_PAGES } from "./encoding";
+export type { CodePage, EncodedSegment } from "./encoding";
 
 export type {
   Alignment,
