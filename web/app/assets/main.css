@@ -311,6 +311,27 @@ input[type="checkbox"] {
   max-height: 300px;
 }
 
+textarea.output-editable {
+  width: calc(100% - 1rem);
+  resize: vertical;
+  border: 1px solid var(--border);
+  cursor: text;
+  transition: border-color var(--transition);
+}
+
+textarea.output-editable:focus {
+  border-color: var(--accent);
+  outline: none;
+  color: var(--text);
+}
+
+.output-hint {
+  padding: 0 0.75rem 0.4rem;
+  font-size: 0.6rem;
+  color: var(--text-dim);
+  opacity: 0.6;
+}
+
 /* Language tabs */
 .lang-tabs {
   display: flex;

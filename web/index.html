@@ -348,7 +348,12 @@
                 <button id="btn-copy" class="btn">Copy</button>
               </div>
               <div id="output-error" class="error" hidden></div>
-              <pre id="output-code" class="output-code"></pre>
+              <textarea
+                id="output-code"
+                class="output-code output-editable"
+                spellcheck="false"
+              ></textarea>
+              <div class="output-hint">Edit the code above or paste your own printer commands</div>
             </div>
 
             <!-- Code Preview -->
@@ -469,11 +474,13 @@ Coffee,2,7.00</textarea
                 </div>
                 <button id="btn-copy-receipt-output" class="btn">Copy</button>
               </div>
-              <pre
+              <textarea
                 id="receipt-output"
-                class="output-code"
+                class="output-code output-editable"
                 style="min-height: 120px; max-height: 300px"
-              ></pre>
+                spellcheck="false"
+              ></textarea>
+              <div class="output-hint">Edit or paste your own printer commands</div>
             </div>
             <div class="code-section">
               <div class="output-header">

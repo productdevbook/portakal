@@ -283,11 +283,11 @@ function generate(): void {
       output = b.toTSC();
     }
 
-    $("#output-code").textContent = output;
+    ($("#output-code") as HTMLTextAreaElement).value = output;
     $("#code-preview").textContent = generateCodeSnippet();
     $("#output-error").setAttribute("hidden", "");
   } catch (e: any) {
-    $("#output-code").textContent = "";
+    ($("#output-code") as HTMLTextAreaElement).value = "";
     $("#preview-container").innerHTML = "";
     $("#code-preview").textContent = "";
     const err = $("#output-error");
@@ -339,7 +339,7 @@ export function setupApp(): void {
   }
 
   $("#btn-copy").addEventListener("click", () => {
-    const text = $("#output-code").textContent ?? "";
+    const text = ($("#output-code") as HTMLTextAreaElement).value;
     navigator.clipboard.writeText(text);
     const btn = $("#btn-copy");
     btn.textContent = "Copied!";
@@ -367,7 +367,7 @@ export function setupApp(): void {
 
   // Receipt copy buttons
   $("#btn-copy-receipt-output").addEventListener("click", () => {
-    const text = $("#receipt-output").textContent ?? "";
+    const text = ($("#receipt-output") as HTMLTextAreaElement).value;
     navigator.clipboard.writeText(text);
     const btn = $("#btn-copy-receipt-output");
     btn.textContent = "Copied!";
@@ -481,7 +481,7 @@ function generateReceipt(): void {
       output = b.toTSC();
     }
 
-    $("#receipt-output").textContent = output;
+    ($("#receipt-output") as HTMLTextAreaElement).value = output;
 
     // Code preview
     const rLangMap: Record<string, string> = {
@@ -512,7 +512,7 @@ ${items.map((i) => `  .text(formatPair("${i.name} x${i.qty}", "$${Number.parseFl
     $("#receipt-code").textContent = code;
   } catch {
     $("#receipt-preview").textContent = "";
-    $("#receipt-output").textContent = "";
+    ($("#receipt-output") as HTMLTextAreaElement).value = "";
     $("#receipt-code").textContent = "";
   }
 }
