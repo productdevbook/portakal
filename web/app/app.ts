@@ -1,4 +1,4 @@
-import { label, type LabelBuilder, type MonochromeBitmap } from "portakal";
+import { label, formatPair, separator, type LabelBuilder, type MonochromeBitmap } from "portakal";
 import {
   encodeCode128,
   encodeEAN13,
@@ -29,7 +29,7 @@ function checked(id: string): boolean {
   return ($(id) as HTMLInputElement).checked;
 }
 
-let currentLang: "tsc" | "zpl" | "epl" | "escpos" = "tsc";
+let currentLang: "tsc" | "zpl" | "epl" | "cpcl" | "escpos" = "tsc";
 
 /** Convert etiket RasterData (8-bit per pixel rows) to portakal MonochromeBitmap (1-bit packed) */
 function rasterToBitmap(raster: RasterData): MonochromeBitmap {
@@ -239,14 +239,14 @@ function generateCodeSnippet(): string {
     );
   }
 
-  const lang =
-    currentLang === "escpos"
-      ? "toESCPOS"
-      : currentLang === "zpl"
-        ? "toZPL"
-        : currentLang === "epl"
-          ? "toEPL"
-          : "toTSC";
+  const langMap: Record<string, string> = {
+    escpos: "toESCPOS",
+    zpl: "toZPL",
+    epl: "toEPL",
+    cpcl: "toCPCL",
+    tsc: "toTSC",
+  };
+  const lang = langMap[currentLang] ?? "toTSC";
   lines.push(`  .${lang}();`);
 
   return lines.join("\n");
@@ -264,6 +264,8 @@ function generate(): void {
       output = b.toZPL();
     } else if (currentLang === "epl") {
       output = b.toEPL();
+    } else if (currentLang === "cpcl") {
+      output = b.toCPCL();
     } else {
       output = b.toTSC();
     }
@@ -339,10 +341,93 @@ export function setupApp(): void {
     setTimeout(() => (btn.textContent = "Copy"), 1500);
   });
 
-  for (const input of $$("input, select")) {
-    input.addEventListener("input", generate);
-    input.addEventListener("change", generate);
+  // Receipt copy button
+  $("#btn-copy-receipt").addEventListener("click", () => {
+    const text = $("#receipt-code").textContent ?? "";
+    navigator.clipboard.writeText(text);
+    const btn = $("#btn-copy-receipt");
+    btn.textContent = "Copied!";
+    setTimeout(() => (btn.textContent = "Copy"), 1500);
+  });
+
+  for (const input of $$("input, select, textarea")) {
+    input.addEventListener("input", () => {
+      generate();
+      generateReceipt();
+    });
+    input.addEventListener("change", () => {
+      generate();
+      generateReceipt();
+    });
   }
 
   generate();
+  generateReceipt();
+}
+
+function generateReceipt(): void {
+  try {
+    const w = Number.parseInt(val("#r-width"), 10) || 48;
+    const store = val("#r-store") || "MY STORE";
+    const address = val("#r-address") || "";
+    const footer = val("#r-footer") || "";
+    const itemsRaw = val("#r-items") || "";
+
+    // Parse items
+    const items: { name: string; qty: string; price: string }[] = [];
+    for (const line of itemsRaw.split("\n")) {
+      const parts = line.split(",").map((s) => s.trim());
+      if (parts.length >= 3 && parts[0]) {
+        items.push({ name: parts[0], qty: parts[1] ?? "1", price: parts[2] ?? "0.00" });
+      }
+    }
+
+    // Build receipt text
+    const lines: string[] = [];
+    const center = (text: string) => {
+      const pad = Math.max(0, Math.floor((w - text.length) / 2));
+      return " ".repeat(pad) + text;
+    };
+
+    lines.push(center(store));
+    if (address) lines.push(center(address));
+    lines.push(separator("=", w));
+    lines.push(formatPair("Item", "Price", w));
+    lines.push(separator("-", w));
+
+    let total = 0;
+    for (const item of items) {
+      const price = Number.parseFloat(item.price) || 0;
+      total += price;
+      const left = `${item.name} x${item.qty}`;
+      lines.push(formatPair(left, `$${price.toFixed(2)}`, w));
+    }
+
+    lines.push(separator("-", w));
+    lines.push(formatPair("TOTAL", `$${total.toFixed(2)}`, w));
+    lines.push(separator("=", w));
+    if (footer) lines.push(center(footer));
+
+    $("#receipt-preview").textContent = lines.join("\n");
+
+    // Generate code
+    const code = `import { label, formatPair, separator } from "portakal";
+
+const w = ${w}; // chars per line
+const receipt = label({ width: 80, unit: "mm" })
+  .text("${store}", { align: "center", bold: true, size: 2 })
+  .text("${address}", { align: "center" })
+  .text(separator("=", w))
+${items.map((i) => `  .text(formatPair("${i.name} x${i.qty}", "$${Number.parseFloat(i.price).toFixed(2)}", w))`).join("\n")}
+  .text(separator("-", w))
+  .text(formatPair("TOTAL", "$${total.toFixed(2)}", w), { bold: true, size: 2 })
+  .text(separator("=", w))
+  .text("${footer}", { align: "center" })
+  .toESCPOS();`;
+
+    $("#receipt-code").textContent = code;
+  } catch {
+    $("#receipt-preview").textContent = "";
+    $("#receipt-code").textContent = "";
+  }
 }
