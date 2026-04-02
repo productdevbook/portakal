@@ -17,6 +17,7 @@ import { compileToTSC } from "./languages/tsc";
 import { compileToZPL } from "./languages/zpl";
 import { compileToEPL } from "./languages/epl";
 import { compileToESCPOS } from "./languages/escpos";
+import { renderPreview } from "./preview";
 
 export class LabelBuilder {
   private readonly config: LabelConfig;
@@ -113,6 +114,11 @@ export class LabelBuilder {
   /** Compile to ESC/POS byte sequence */
   toESCPOS(): Uint8Array {
     return compileToESCPOS(this.resolve());
+  }
+
+  /** Render as SVG preview (for development/testing without a physical printer) */
+  toPreview(): string {
+    return renderPreview(this.resolve());
   }
 }
 

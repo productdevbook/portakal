@@ -10,6 +10,7 @@ export { compileToTSC } from "./languages/tsc";
 export { compileToZPL } from "./languages/zpl";
 export { compileToEPL } from "./languages/epl";
 export { compileToESCPOS } from "./languages/escpos";
+export { renderPreview } from "./preview";
 
 export type {
   Alignment,
