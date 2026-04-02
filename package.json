@@ -1,0 +1,66 @@
+{
+  "name": "portakal",
+  "version": "0.1.0",
+  "description": "Universal printer language SDK — TSC, ZPL, EPL, ESC/POS, CPCL, DPL, IPL, SBPL and more. Text, barcode, QR, images. Pure TypeScript, zero dependencies.",
+  "keywords": [
+    "barcode",
+    "cpcl",
+    "dpl",
+    "epl",
+    "esc-pos",
+    "esm",
+    "ipl",
+    "label",
+    "printer",
+    "qr",
+    "sbpl",
+    "thermal-printer",
+    "tsc",
+    "typescript",
+    "zero-dependency",
+    "zpl"
+  ],
+  "homepage": "https://github.com/productdevbook/portakal",
+  "bugs": {
+    "url": "https://github.com/productdevbook/portakal/issues"
+  },
+  "license": "MIT",
+  "author": "productdevbook",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/productdevbook/portakal.git"
+  },
+  "funding": "https://github.com/sponsors/productdevbook",
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "build": "obuild",
+    "dev": "vitest",
+    "lint": "oxlint . && oxfmt --check .",
+    "lint:fix": "oxlint . --fix && oxfmt .",
+    "fmt": "oxfmt .",
+    "test": "pnpm lint && pnpm typecheck && vitest run",
+    "typecheck": "tsgo --noEmit",
+    "release": "pnpm test && pnpm build && bumpp --commit --tag --push --all"
+  },
+  "devDependencies": {
+    "@typescript/native-preview": "7.0.0-dev.20260316.1",
+    "@vitest/coverage-v8": "^4.1.1",
+    "bumpp": "^11.0.1",
+    "obuild": "^0.4.32",
+    "oxfmt": "^0.42.0",
+    "oxlint": "^1.57.0",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.1"
+  }
+}
