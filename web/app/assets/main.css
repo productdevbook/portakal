@@ -320,7 +320,8 @@ input[type="checkbox"] {
   padding: 0.15rem;
 }
 
-.lang-tab {
+.lang-tab,
+.rlang-tab {
   background: none;
   border: none;
   color: var(--text-dim);
@@ -333,11 +334,13 @@ input[type="checkbox"] {
   letter-spacing: 0.03em;
 }
 
-.lang-tab:hover {
+.lang-tab:hover,
+.rlang-tab:hover {
   color: var(--text-muted);
 }
 
-.lang-tab.active {
+.lang-tab.active,
+.rlang-tab.active {
   background: var(--surface-2);
   color: var(--accent);
 }

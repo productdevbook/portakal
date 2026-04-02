@@ -447,7 +447,24 @@ Coffee,2,7.00</textarea
               <pre
                 id="receipt-preview"
                 class="output-code"
-                style="min-height: 200px; max-height: 500px; font-size: 0.72rem; line-height: 1.4"
+                style="min-height: 200px; max-height: 400px; font-size: 0.72rem; line-height: 1.4"
+              ></pre>
+            </div>
+            <div class="code-section">
+              <div class="output-header">
+                <div class="lang-tabs">
+                  <button class="rlang-tab active" data-rlang="escpos">ESC/POS</button>
+                  <button class="rlang-tab" data-rlang="tsc">TSC</button>
+                  <button class="rlang-tab" data-rlang="zpl">ZPL</button>
+                  <button class="rlang-tab" data-rlang="epl">EPL</button>
+                  <button class="rlang-tab" data-rlang="cpcl">CPCL</button>
+                </div>
+                <button id="btn-copy-receipt-output" class="btn">Copy</button>
+              </div>
+              <pre
+                id="receipt-output"
+                class="output-code"
+                style="min-height: 120px; max-height: 300px"
               ></pre>
             </div>
             <div class="code-section">
@@ -461,7 +478,7 @@ Coffee,2,7.00</textarea
                     font-weight: 700;
                   "
                 >
-                  ESC/POS Code
+                  Code Preview
                 </h3>
                 <button id="btn-copy-receipt" class="btn">Copy</button>
               </div>
