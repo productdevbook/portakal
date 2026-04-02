@@ -10,10 +10,10 @@
   <br>
   One API, every thermal printer. Pure TypeScript, zero dependencies.
   <br><br>
-  <a href="https://npmjs.com/package/portakal"><img src="https://img.shields.io/npm/v/portakal?style=flat&colorA=18181B&colorB=F0DB4F" alt="npm version"></a>
-  <a href="https://npmjs.com/package/portakal"><img src="https://img.shields.io/npm/dm/portakal?style=flat&colorA=18181B&colorB=F0DB4F" alt="npm downloads"></a>
-  <a href="https://bundlephobia.com/result?p=portakal"><img src="https://img.shields.io/bundlephobia/minzip/portakal?style=flat&colorA=18181B&colorB=F0DB4F" alt="bundle size"></a>
-  <a href="https://github.com/productdevbook/portakal/blob/main/LICENSE"><img src="https://img.shields.io/github/license/productdevbook/portakal?style=flat&colorA=18181B&colorB=F0DB4F" alt="license"></a>
+  <a href="https://npmjs.com/package/portakal"><img src="https://img.shields.io/npm/v/portakal?style=flat&colorA=18181B&colorB=F97316" alt="npm version"></a>
+  <a href="https://npmjs.com/package/portakal"><img src="https://img.shields.io/npm/dm/portakal?style=flat&colorA=18181B&colorB=F97316" alt="npm downloads"></a>
+  <a href="https://bundlephobia.com/result?p=portakal"><img src="https://img.shields.io/bundlephobia/minzip/portakal?style=flat&colorA=18181B&colorB=F97316" alt="bundle size"></a>
+  <a href="https://github.com/productdevbook/portakal/blob/main/LICENSE"><img src="https://img.shields.io/github/license/productdevbook/portakal?style=flat&colorA=18181B&colorB=F97316" alt="license"></a>
 </p>
 
 > [!NOTE]
