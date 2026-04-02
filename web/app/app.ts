@@ -283,7 +283,10 @@ function generate(): void {
       output = b.toTSC();
     }
 
-    ($("#output-code") as HTMLTextAreaElement).value = output;
+    const codeEl = $("#output-code") as HTMLTextAreaElement;
+    const scrollTop = codeEl.scrollTop;
+    codeEl.value = output;
+    codeEl.scrollTop = scrollTop;
     $("#code-preview").textContent = generateCodeSnippet();
     $("#output-error").setAttribute("hidden", "");
   } catch (e: any) {
@@ -385,15 +388,20 @@ export function setupApp(): void {
   // Store receiptLang in closure for generateReceipt
   (window as any).__receiptLang = () => receiptLang;
 
+  function update(): void {
+    const scrollY = window.scrollY;
+    generate();
+    generateReceipt();
+    requestAnimationFrame(() => {
+      window.scrollTo(0, scrollY);
+    });
+  }
+
   for (const input of $$("input, select, textarea")) {
-    input.addEventListener("input", () => {
-      generate();
-      generateReceipt();
-    });
-    input.addEventListener("change", () => {
-      generate();
-      generateReceipt();
-    });
+    // Skip output textareas — don't re-generate when user edits output
+    if (input.id === "output-code" || input.id === "receipt-output") continue;
+    input.addEventListener("input", update);
+    input.addEventListener("change", update);
   }
 
   generate();
