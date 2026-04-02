@@ -137,21 +137,6 @@ header p {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
-  max-height: calc(100vh - 140px);
-  overflow-y: auto;
-}
-
-.controls::-webkit-scrollbar {
-  width: 4px;
-}
-
-.controls::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.controls::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 2px;
 }
 
 /* Section in controls */
