@@ -33,7 +33,8 @@ export {
 } from "./profiles";
 export type { PrinterProfile, PrinterLanguage, CutterType, ImageMode } from "./profiles";
 export { chunkedWrite, writeWithRetry, BLE_UUIDS, USB_VENDOR_IDS } from "./transport";
-export { parseTSC } from "./parsers/tsc";
+export { parseTSC, parseTSPL } from "./parsers/tsc";
+export { parseZPL } from "./parsers/zpl";
 export type {
   PrinterTransport,
   ConnectionState,
