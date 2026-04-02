@@ -24,6 +24,14 @@ export { formatRow, formatPair, formatTable, separator, wordWrap } from "./recei
 export type { Column } from "./receipt";
 export { encodeText, encodeTextForPrinter, isASCII, CODE_PAGES } from "./encoding";
 export type { CodePage, EncodedSegment } from "./encoding";
+export {
+  PRINTER_PROFILES,
+  getProfile,
+  listProfiles,
+  findByVendorId,
+  findByLanguage,
+} from "./profiles";
+export type { PrinterProfile, PrinterLanguage, CutterType, ImageMode } from "./profiles";
 
 export type {
   Alignment,
