@@ -5,6 +5,8 @@ import {
   renderPreview,
   parseTSC,
   parseZPL,
+  parseEPL,
+  parseCPCL,
   type LabelBuilder,
   type MonochromeBitmap,
   type ResolvedLabel,
@@ -422,8 +424,13 @@ export function setupApp(): void {
       if (currentLang === "zpl") {
         const r = parseZPL(code);
         parsed = { widthDots: r.widthDots, heightDots: r.heightDots, elements: r.elements };
+      } else if (currentLang === "epl") {
+        const r = parseEPL(code);
+        parsed = { widthDots: r.widthDots, heightDots: r.heightDots || 240, elements: r.elements };
+      } else if (currentLang === "cpcl") {
+        const r = parseCPCL(code);
+        parsed = { widthDots: r.widthDots, heightDots: r.heightDots, elements: r.elements };
       } else {
-        // TSC parser as default (works for TSC, and basic text extraction for others)
         parsed = parseTSC(code);
       }
 
