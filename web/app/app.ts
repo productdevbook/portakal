@@ -704,12 +704,12 @@ export function setupApp(): void {
     img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgData);
   }
 
-  // Validate downloads
-  $("#v-download-svg").addEventListener("click", () =>
-    downloadSVG("v-preview", "label-preview.svg"),
+  // Label downloads
+  $("#l-download-svg").addEventListener("click", () =>
+    downloadSVG("preview-container", "label.svg"),
   );
-  $("#v-download-png").addEventListener("click", () =>
-    downloadPNG("v-preview", "label-preview.png"),
+  $("#l-download-png").addEventListener("click", () =>
+    downloadPNG("preview-container", "label.png"),
   );
 
   // Convert downloads
