@@ -13,6 +13,9 @@ function val(id: string): string {
 function num(id: string): number {
   return Number.parseInt(val(id), 10) || 0;
 }
+function checked(id: string): boolean {
+  return ($(id) as HTMLInputElement).checked;
+}
 
 let currentLang: "tsc" | "zpl" | "epl" | "escpos" = "tsc";
 
@@ -28,18 +31,24 @@ function buildLabel(): LabelBuilder {
     copies: num("#lbl-copies") || 1,
   });
 
-  const textContent = val("#el-text");
-  if (textContent) {
-    b.text(textContent, {
+  if (checked("#el-text-enable")) {
+    b.text(val("#el-text") || "Hello World", {
       x: num("#el-text-x"),
       y: num("#el-text-y"),
       size: num("#el-text-size") || 1,
     });
   }
 
-  const bcData = val("#el-barcode");
-  if (bcData) {
-    b.barcode(bcData, {
+  if (checked("#el-text2-enable")) {
+    b.text(val("#el-text2") || "", {
+      x: num("#el-text2-x"),
+      y: num("#el-text2-y"),
+      size: num("#el-text2-size") || 1,
+    });
+  }
+
+  if (checked("#el-barcode-enable")) {
+    b.barcode(val("#el-barcode") || "123456789", {
       type: val("#el-barcode-type") as any,
       x: num("#el-barcode-x"),
       y: num("#el-barcode-y"),
@@ -47,9 +56,8 @@ function buildLabel(): LabelBuilder {
     });
   }
 
-  const qrData = val("#el-qr");
-  if (qrData) {
-    b.qrcode(qrData, {
+  if (checked("#el-qr-enable")) {
+    b.qrcode(val("#el-qr") || "https://example.com", {
       x: num("#el-qr-x"),
       y: num("#el-qr-y"),
       size: num("#el-qr-size") || 6,
@@ -57,7 +65,7 @@ function buildLabel(): LabelBuilder {
     });
   }
 
-  if (($("#el-box-enable") as HTMLInputElement).checked) {
+  if (checked("#el-box-enable")) {
     b.box({
       x: num("#el-box-x"),
       y: num("#el-box-y"),
@@ -67,7 +75,7 @@ function buildLabel(): LabelBuilder {
     });
   }
 
-  if (($("#el-line-enable") as HTMLInputElement).checked) {
+  if (checked("#el-line-enable")) {
     b.line({
       x1: num("#el-line-x1"),
       y1: num("#el-line-y1"),
@@ -84,10 +92,8 @@ function generate(): void {
   try {
     const b = buildLabel();
 
-    // Preview
     $("#preview-container").innerHTML = b.toPreview();
 
-    // Code output
     let output: string;
     if (currentLang === "escpos") {
       output = formatHex(b.toESCPOS());
@@ -124,7 +130,6 @@ function formatHex(bytes: Uint8Array): string {
 }
 
 export function setupApp(): void {
-  // Tab switching
   for (const tab of $$(".tab")) {
     tab.addEventListener("click", () => {
       $$(".tab").forEach((t) => t.classList.remove("active"));
@@ -134,7 +139,6 @@ export function setupApp(): void {
     });
   }
 
-  // Language tabs
   for (const tab of $$(".lang-tab")) {
     tab.addEventListener("click", () => {
       $$(".lang-tab").forEach((t) => t.classList.remove("active"));
@@ -144,7 +148,6 @@ export function setupApp(): void {
     });
   }
 
-  // Collapsible sections
   for (const header of $$(".ctrl-header")) {
     header.addEventListener("click", () => {
       const name = header.dataset.collapse!;
@@ -155,7 +158,6 @@ export function setupApp(): void {
     });
   }
 
-  // Copy button
   $("#btn-copy").addEventListener("click", () => {
     const text = $("#output-code").textContent ?? "";
     navigator.clipboard.writeText(text);
@@ -164,7 +166,6 @@ export function setupApp(): void {
     setTimeout(() => (btn.textContent = "Copy"), 1500);
   });
 
-  // Bind all inputs
   for (const input of $$("input, select")) {
     input.addEventListener("input", generate);
     input.addEventListener("change", generate);

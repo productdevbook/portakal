@@ -31,7 +31,6 @@
         <button class="tab" data-tab="receipt" role="tab">Receipt</button>
       </nav>
 
-      <!-- ═══════ LABEL DESIGNER ═══════ -->
       <section class="panel active" data-panel="label">
         <div class="split">
           <div class="controls">
@@ -77,10 +76,14 @@
               </div>
             </div>
 
-            <!-- Text -->
+            <!-- Text 1 -->
             <div class="ctrl-section">
               <div class="ctrl-header" data-collapse="text">
-                <h3>Text</h3>
+                <h3>
+                  <label class="check-label"
+                    ><input id="el-text-enable" type="checkbox" checked /> Text 1</label
+                  >
+                </h3>
                 <span class="toggle">&#9660;</span>
               </div>
               <div class="ctrl-body" data-section="text">
@@ -103,13 +106,47 @@
               </div>
             </div>
 
+            <!-- Text 2 -->
+            <div class="ctrl-section">
+              <div class="ctrl-header" data-collapse="text2">
+                <h3>
+                  <label class="check-label"
+                    ><input id="el-text2-enable" type="checkbox" checked /> Text 2</label
+                  >
+                </h3>
+                <span class="toggle">&#9660;</span>
+              </div>
+              <div class="ctrl-body" data-section="text2">
+                <div class="field full">
+                  <label for="el-text2">Content</label>
+                  <input id="el-text2" type="text" value="SKU: PRD-00123" spellcheck="false" />
+                </div>
+                <div class="field">
+                  <label for="el-text2-x">X</label>
+                  <input id="el-text2-x" type="number" value="10" />
+                </div>
+                <div class="field">
+                  <label for="el-text2-y">Y</label>
+                  <input id="el-text2-y" type="number" value="35" />
+                </div>
+                <div class="field">
+                  <label for="el-text2-size">Size</label>
+                  <input id="el-text2-size" type="number" value="1" min="1" max="10" />
+                </div>
+              </div>
+            </div>
+
             <!-- Barcode -->
             <div class="ctrl-section">
               <div class="ctrl-header" data-collapse="barcode">
-                <h3>Barcode</h3>
-                <span class="toggle">&#9660;</span>
+                <h3>
+                  <label class="check-label"
+                    ><input id="el-barcode-enable" type="checkbox" /> Barcode</label
+                  >
+                </h3>
+                <span class="toggle">&#9654;</span>
               </div>
-              <div class="ctrl-body" data-section="barcode">
+              <div class="ctrl-body collapsed" data-section="barcode">
                 <div class="field full">
                   <label for="el-barcode">Data</label>
                   <input id="el-barcode" type="text" value="123456789" spellcheck="false" />
@@ -135,7 +172,7 @@
                 </div>
                 <div class="field">
                   <label for="el-barcode-y">Y</label>
-                  <input id="el-barcode-y" type="number" value="50" />
+                  <input id="el-barcode-y" type="number" value="60" />
                 </div>
                 <div class="field">
                   <label for="el-barcode-h">Height</label>
@@ -147,10 +184,14 @@
             <!-- QR Code -->
             <div class="ctrl-section">
               <div class="ctrl-header" data-collapse="qr">
-                <h3>QR Code</h3>
-                <span class="toggle">&#9660;</span>
+                <h3>
+                  <label class="check-label"
+                    ><input id="el-qr-enable" type="checkbox" /> QR Code</label
+                  >
+                </h3>
+                <span class="toggle">&#9654;</span>
               </div>
-              <div class="ctrl-body" data-section="qr">
+              <div class="ctrl-body collapsed" data-section="qr">
                 <div class="field full">
                   <label for="el-qr">Data</label>
                   <input id="el-qr" type="text" value="https://example.com" spellcheck="false" />
@@ -187,9 +228,9 @@
               </div>
               <div class="ctrl-body" data-section="shapes">
                 <div class="field full">
-                  <label class="check-label">
-                    <input id="el-box-enable" type="checkbox" checked /> Box
-                  </label>
+                  <label class="check-label"
+                    ><input id="el-box-enable" type="checkbox" checked /> Box</label
+                  >
                 </div>
                 <div class="field">
                   <label for="el-box-x">X</label>
@@ -212,9 +253,9 @@
                   <input id="el-box-t" type="number" value="2" min="1" />
                 </div>
                 <div class="field full" style="margin-top: 0.25rem">
-                  <label class="check-label">
-                    <input id="el-line-enable" type="checkbox" checked /> Line
-                  </label>
+                  <label class="check-label"
+                    ><input id="el-line-enable" type="checkbox" checked /> Line</label
+                  >
                 </div>
                 <div class="field">
                   <label for="el-line-x1">X1</label>
@@ -242,15 +283,12 @@
 
           <!-- Output -->
           <div class="output">
-            <!-- Live Preview -->
             <div class="preview-section">
               <div class="preview-header">
                 <h3>Preview</h3>
               </div>
               <div id="preview-container" class="preview-canvas"></div>
             </div>
-
-            <!-- Code Output -->
             <div class="code-section">
               <div class="output-header">
                 <div class="lang-tabs">
@@ -268,7 +306,6 @@
         </div>
       </section>
 
-      <!-- ═══════ RECEIPT ═══════ -->
       <section class="panel" data-panel="receipt">
         <p style="color: var(--text-dim); text-align: center; padding: 3rem">
           Receipt designer coming soon.
