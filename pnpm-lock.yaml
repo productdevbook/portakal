@@ -41,7 +41,7 @@ importers:
     dependencies:
       etiket:
         specifier: latest
-        version: 0.9.1
+        version: 0.10.0
     devDependencies:
       nitro:
         specifier: latest
@@ -938,6 +938,10 @@ packages:
 
   estree-walker@3.0.3:
     resolution: {integrity: sha512-7RUKfXgSMMkzt6ZuXmqapOurLGPPfgj6l9uRZ7lRGolvk0y2yocc35LdcxKC5PQZdn2DMqioAQ2NoWcrTKmm6g==}
+
+  etiket@0.10.0:
+    resolution: {integrity: sha512-vl0BPO+LDlcNsheoqduNGs/xUQ8KWno+BYFxeEeWvDWjGUi23w1M22BNO9S+9bD2UZEAP03oZMS7j+bRbPq8cw==}
+    hasBin: true
 
   etiket@0.9.1:
     resolution: {integrity: sha512-05EPMyqfcmIb6LgsF8plQwBPf4o5fukcoB4dSnst27MVIKhiaMgTptE8mPEEl2LIm+64OeL1DejBBCblSyIKIQ==}
@@ -2062,6 +2066,8 @@ snapshots:
   estree-walker@3.0.3:
     dependencies:
       '@types/estree': 1.0.8
+
+  etiket@0.10.0: {}
 
   etiket@0.9.1: {}
 

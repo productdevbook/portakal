@@ -1,6 +1,17 @@
-import { label, type LabelBuilder } from "portakal";
-import { barcodePNG, qrcodePNG } from "etiket/png";
-import type { MonochromeBitmap } from "portakal";
+import { label, type LabelBuilder, type MonochromeBitmap } from "portakal";
+import {
+  encodeCode128,
+  encodeEAN13,
+  encodeEAN8,
+  encodeUPCA,
+  encodeCode39,
+  encodeITF14,
+  encodeCodabar,
+  encodeQR,
+  renderBarcodeRaster,
+  renderMatrixRaster,
+} from "etiket";
+import type { RasterData } from "etiket";
 
 function $(sel: string): HTMLElement {
   return document.querySelector(sel)!;
@@ -8,7 +19,6 @@ function $(sel: string): HTMLElement {
 function $$(sel: string): HTMLElement[] {
   return [...document.querySelectorAll(sel)] as HTMLElement[];
 }
-
 function val(id: string): string {
   return ($(id) as HTMLInputElement).value;
 }
@@ -21,21 +31,45 @@ function checked(id: string): boolean {
 
 let currentLang: "tsc" | "zpl" | "epl" | "escpos" = "tsc";
 
-/** Convert etiket PNG (Uint8Array) to MonochromeBitmap for portakal */
-function pngToBitmap(png: Uint8Array, targetWidth: number): MonochromeBitmap {
-  // Simplified: create a placeholder bitmap for preview
-  // In production, you'd decode the PNG properly
-  const bytesPerRow = Math.ceil(targetWidth / 8);
-  const height = Math.ceil(targetWidth * 0.4);
+/** Convert etiket RasterData (8-bit per pixel rows) to portakal MonochromeBitmap (1-bit packed) */
+function rasterToBitmap(raster: RasterData): MonochromeBitmap {
+  const { width, height, rows } = raster;
+  const bytesPerRow = Math.ceil(width / 8);
   const data = new Uint8Array(bytesPerRow * height);
-  // Fill with a pattern to show something in preview
+
   for (let y = 0; y < height; y++) {
-    for (let x = 0; x < bytesPerRow; x++) {
-      // Simple alternating pattern to represent barcode-like content
-      data[y * bytesPerRow + x] = y % 2 === 0 ? 0b10101010 : 0b01010101;
+    const row = rows[y];
+    if (!row) continue;
+    for (let x = 0; x < width; x++) {
+      if (row[x]) {
+        // 1 = foreground (black) → set bit
+        const byteIdx = y * bytesPerRow + Math.floor(x / 8);
+        const bitIdx = 7 - (x % 8);
+        data[byteIdx] |= 1 << bitIdx;
+      }
     }
   }
-  return { data, width: targetWidth, height, bytesPerRow };
+
+  return { data, width, height, bytesPerRow };
+}
+
+function encodeBarcode(data: string, type: string): number[] {
+  switch (type) {
+    case "ean13":
+      return encodeEAN13(data);
+    case "ean8":
+      return encodeEAN8(data);
+    case "upca":
+      return encodeUPCA(data);
+    case "code39":
+      return encodeCode39(data);
+    case "itf14":
+      return encodeITF14(data);
+    case "codabar":
+      return encodeCodabar(data);
+    default:
+      return encodeCode128(data);
+  }
 }
 
 function buildLabel(): LabelBuilder {
@@ -75,31 +109,28 @@ function buildLabel(): LabelBuilder {
   }
 
   if (checked("#el-barcode-enable")) {
-    const barcodeData = val("#el-barcode-data") || "123456789";
-    const w = num("#el-barcode-w") || 200;
-    const png = barcodePNG(barcodeData, {
-      type: val("#el-barcode-type") as any,
-      height: 50,
-      barWidth: 2,
-    });
-    b.image(pngToBitmap(png, w), {
+    const data = val("#el-barcode-data") || "123456789";
+    const type = val("#el-barcode-type");
+    const bars = encodeBarcode(data, type);
+    const raster = renderBarcodeRaster(bars, { scale: 2, height: 50, margin: 4 });
+    const bitmap = rasterToBitmap(raster);
+    b.image(bitmap, {
       x: num("#el-barcode-x"),
       y: num("#el-barcode-y"),
-      width: w,
+      width: num("#el-barcode-w") || raster.width,
     });
   }
 
   if (checked("#el-qr-enable")) {
-    const qrData = val("#el-qr-data") || "https://example.com";
-    const size = num("#el-qr-size") || 80;
-    const png = qrcodePNG(qrData, {
-      size,
-      ecLevel: (val("#el-qr-ecc") as any) || "M",
-    });
-    b.image(pngToBitmap(png, size), {
+    const data = val("#el-qr-data") || "https://example.com";
+    const ecc = (val("#el-qr-ecc") as "L" | "M" | "Q" | "H") || "M";
+    const matrix = encodeQR(data, { ecLevel: ecc });
+    const raster = renderMatrixRaster(matrix, { moduleSize: 4, margin: 2 });
+    const bitmap = rasterToBitmap(raster);
+    b.image(bitmap, {
       x: num("#el-qr-x"),
       y: num("#el-qr-y"),
-      width: size,
+      width: num("#el-qr-size") || raster.width,
     });
   }
 
@@ -143,22 +174,28 @@ function generateCodeSnippet(): string {
   const hasQR = checked("#el-qr-enable");
   if (hasBarcode || hasQR) {
     const imports: string[] = [];
-    if (hasBarcode) imports.push("barcodePNG");
-    if (hasQR) imports.push("qrcodePNG");
-    lines.push(`import { ${imports.join(", ")} } from "etiket/png";`);
+    if (hasBarcode) imports.push("encodeCode128", "renderBarcodeRaster");
+    if (hasQR) imports.push("encodeQR", "renderMatrixRaster");
+    lines.push(`import { ${imports.join(", ")} } from "etiket";`);
+    lines.push("");
+    lines.push("// Helper: convert etiket raster to portakal bitmap");
+    lines.push("function rasterToBitmap(raster) { /* see docs */ }");
   }
 
   lines.push("");
 
   if (hasBarcode) {
     const data = val("#el-barcode-data") || "123456789";
-    const type = val("#el-barcode-type");
-    lines.push(`const barcode = barcodePNG("${data}", { type: "${type}" });`);
+    lines.push(`const bars = encodeCode128("${data}");`);
+    lines.push("const barcodeRaster = renderBarcodeRaster(bars, { scale: 2, height: 50 });");
+    lines.push("const barcode = rasterToBitmap(barcodeRaster);");
   }
   if (hasQR) {
     const data = val("#el-qr-data") || "https://example.com";
     const ecc = val("#el-qr-ecc") || "M";
-    lines.push(`const qr = qrcodePNG("${data}", { ecLevel: "${ecc}" });`);
+    lines.push(`const qrMatrix = encodeQR("${data}", { ecLevel: "${ecc}" });`);
+    lines.push("const qrRaster = renderMatrixRaster(qrMatrix, { moduleSize: 4 });");
+    lines.push("const qr = rasterToBitmap(qrRaster);");
   }
   if (hasBarcode || hasQR) lines.push("");
 
@@ -181,14 +218,10 @@ function generateCodeSnippet(): string {
     lines.push(`  .text("${t}", { x: ${num("#el-text3-x")}, y: ${num("#el-text3-y")} })`);
   }
   if (hasBarcode) {
-    lines.push(
-      `  .image(barcode, { x: ${num("#el-barcode-x")}, y: ${num("#el-barcode-y")}, width: ${num("#el-barcode-w") || 200} })`,
-    );
+    lines.push(`  .image(barcode, { x: ${num("#el-barcode-x")}, y: ${num("#el-barcode-y")} })`);
   }
   if (hasQR) {
-    lines.push(
-      `  .image(qr, { x: ${num("#el-qr-x")}, y: ${num("#el-qr-y")}, width: ${num("#el-qr-size") || 80} })`,
-    );
+    lines.push(`  .image(qr, { x: ${num("#el-qr-x")}, y: ${num("#el-qr-y")} })`);
   }
   if (checked("#el-box-enable")) {
     lines.push(
@@ -222,7 +255,6 @@ function generateCodeSnippet(): string {
 function generate(): void {
   try {
     const b = buildLabel();
-
     $("#preview-container").innerHTML = b.toPreview();
 
     let output: string;
