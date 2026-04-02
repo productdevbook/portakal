@@ -37,6 +37,11 @@ export { parseTSC, parseTSPL } from "./parsers/tsc";
 export { parseZPL } from "./parsers/zpl";
 export { parseEPL } from "./parsers/epl";
 export { parseCPCL } from "./parsers/cpcl";
+export { parseESCPOS } from "./parsers/escpos";
+export { parseDPL } from "./parsers/dpl";
+export { parseSBPL } from "./parsers/sbpl";
+export { parseStarPRNT } from "./parsers/starprnt";
+export { parseIPL } from "./parsers/ipl";
 export type {
   PrinterTransport,
   ConnectionState,
